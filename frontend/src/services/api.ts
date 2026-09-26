@@ -40,7 +40,11 @@ export async function apiRequest<T>(
       let errorData = null;
       try {
         errorData = await response.json();
-        if (errorData?.detail) {
+        if (errorData?.error) {
+          errorMessage = typeof errorData.error === 'string' ? errorData.error : JSON.stringify(errorData.error);
+        } else if (errorData?.message) {
+          errorMessage = typeof errorData.message === 'string' ? errorData.message : JSON.stringify(errorData.message);
+        } else if (errorData?.detail) {
           errorMessage = typeof errorData.detail === 'string' ? errorData.detail : JSON.stringify(errorData.detail);
         }
       } catch {

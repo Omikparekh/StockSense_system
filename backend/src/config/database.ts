@@ -173,6 +173,15 @@ class DatabaseClient {
         expires_at ${timestampDefault},
         used BOOLEAN DEFAULT FALSE,
         created_at ${timestampDefault}
+      );`,
+
+      // Sequence numbering table (ERP-standard sequence tracking: WH/IN/00001, WH/OUT/00001, etc.)
+      `CREATE TABLE IF NOT EXISTS sequences (
+        id ${autoInc},
+        warehouse_code VARCHAR(20) NOT NULL,
+        operation_type VARCHAR(10) NOT NULL,
+        last_number INTEGER NOT NULL DEFAULT 0,
+        UNIQUE(warehouse_code, operation_type)
       );`
     ];
 
@@ -226,6 +235,39 @@ class DatabaseClient {
           );
         }
         console.log('[Database] Seeded default warehouse (WH) and locations (WH/Stock, WH/Output)');
+      }
+
+      // Check and seed demo products
+      const existingProd = await this.queryOne('SELECT id FROM products LIMIT 1');
+      if (!existingProd) {
+        const stockLoc = await this.queryOne("SELECT id FROM locations WHERE path = 'WH/Stock'");
+        const stockLocId = stockLoc ? stockLoc.id : 1;
+
+        const demoProducts = [
+          { name: 'Steel Rods', sku: 'STL-ROD-01', category: 'Raw Materials', uom: 'kg', weight: 100.0, reorder: 15.0, onHand: 50.0 },
+          { name: 'Office Chairs', sku: 'CHR-OFF-02', category: 'Furniture', uom: 'Units', weight: 15.0, reorder: 20.0, onHand: 70.0 },
+          { name: 'Industrial Bolts', sku: 'BLT-IND-03', category: 'Hardware', uom: 'Units', weight: 0.2, reorder: 200.0, onHand: 1200.0 },
+          { name: 'Aluminum Sheets', sku: 'ALM-SHT-04', category: 'Raw Materials', uom: 'kg', weight: 25.0, reorder: 10.0, onHand: 8.0 },
+          { name: 'Electric Motors', sku: 'MTR-ELC-06', category: 'Machinery', uom: 'Units', weight: 35.0, reorder: 5.0, onHand: 0.0 },
+          { name: 'Packaging Boxes', sku: 'BOX-PKG-07', category: 'Packaging', uom: 'Boxes', weight: 0.5, reorder: 50.0, onHand: 350.0 },
+        ];
+
+        for (const p of demoProducts) {
+          const prodRes = await this.execute(
+            `INSERT INTO products (name, sku, category, uom, per_unit_weight, reorder_level)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [p.name, p.sku, p.category, p.uom, p.weight, p.reorder]
+          );
+          const prodId = prodRes.lastInsertRowid;
+          if (prodId) {
+            await this.execute(
+              `INSERT INTO stock_levels (product_id, location_id, on_hand, reserved)
+               VALUES ($1, $2, $3, 0)`,
+              [prodId, stockLocId, p.onHand]
+            );
+          }
+        }
+        console.log('[Database] Seeded 6 realistic demo products with initial stock balances.');
       }
     } catch (err) {
       console.warn('[Database] Seeding notice:', err);

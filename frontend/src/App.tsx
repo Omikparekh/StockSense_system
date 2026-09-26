@@ -6,6 +6,7 @@ import { SignupCard } from './components/auth/SignupCard';
 import { OtpVerificationModal } from './components/auth/OtpVerificationModal';
 import { ForgotPasswordModal } from './components/auth/ForgotPasswordModal';
 import { AppShell } from './components/layout/AppShell';
+import { StockView } from './components/products/StockView';
 import { Card } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
 import { Button } from './components/ui/Button';
@@ -254,14 +255,7 @@ const ViewRouter: React.FC = () => {
         />
       );
     case 'stock':
-      return (
-        <PlaceholderOperationalView
-          title="Stock Availability Table"
-          subtitle="Product catalog, per unit weight, on hand, and free stock levels"
-          codePrefix="Products & Bins"
-          icon={<Boxes className="w-6 h-6" />}
-        />
-      );
+      return <StockView />;
     case 'stock-history':
       return (
         <PlaceholderOperationalView

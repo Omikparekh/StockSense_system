@@ -17,3 +17,45 @@ export interface ApiHealthResponse {
   database: string;
   timestamp: string;
 }
+
+export interface Product {
+  id: number;
+  name: string;
+  sku: string;
+  category: string;
+  uom: string;
+  per_unit_weight: number;
+  reorder_level: number;
+  created_at?: string;
+}
+
+export interface ProductWithStock extends Product {
+  on_hand: number;
+  reserved: number;
+  free_stock: number;
+  stock_status: 'in_stock' | 'low_stock' | 'out_of_stock';
+}
+
+export interface LocationStock {
+  location_id: number;
+  location_name: string;
+  location_path: string;
+  warehouse_name: string;
+  on_hand: number;
+  reserved: number;
+  free_stock: number;
+}
+
+export interface StockMovement {
+  id: number;
+  reference: string;
+  operation_type: OperationType;
+  product_id: number;
+  from_location: string;
+  to_location: string;
+  quantity: number;
+  status: string;
+  user_name?: string;
+  notes?: string;
+  created_at: string;
+}
