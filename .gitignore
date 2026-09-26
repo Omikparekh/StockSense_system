@@ -46,6 +46,8 @@ venv.bak/
 
 # Local SQLite databases
 *.db
+*.db-wal
+*.db-shm
 *.sqlite3
 
 # Editor and OS files

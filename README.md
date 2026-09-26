@@ -2,7 +2,8 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)](https://expressjs.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
@@ -42,20 +43,23 @@ stocksense/
 │   ├── vite.config.ts            # Vite dev server & backend proxy
 │   └── package.json
 │
-├── backend/                      # Python 3.11+ & FastAPI & SQLAlchemy 2.0
-│   ├── app/
-│   │   ├── api/v1/               # API routes and endpoints (/health, /auth, etc.)
-│   │   ├── core/                 # Settings, security, database session management
-│   │   ├── models/               # SQLAlchemy ORM declarative models
-│   │   ├── schemas/              # Pydantic validation schemas
-│   │   └── main.py               # FastAPI application lifecycle and middleware
-│   ├── tests/                    # Pytest test suite (unit and integration)
-│   ├── Dockerfile                # Production containerfile
-│   └── requirements.txt          # Python dependencies
+├── backend/                      # Node.js + TypeScript + Express
+│   ├── src/
+│   │   ├── api/v1/               # Express API v1 routes & endpoints
+│   │   ├── config/               # Environment config & SQLite/PostgreSQL database engine
+│   │   ├── core/                 # Security utilities (bcryptjs, JWT)
+│   │   ├── middleware/           # Zod error handling & authentication middleware
+│   │   ├── types/                # Backend TypeScript interfaces
+│   │   ├── app.ts                # Express application configuration
+│   │   └── server.ts             # Application bootstrapping & server listener
+│   ├── tests/                    # Vitest integration test suite
+│   ├── Dockerfile                # Multi-stage production containerfile
+│   ├── tsconfig.json             # NodeNext TypeScript configuration
+│   └── package.json
 │
 ├── .env.example                  # Documented environment variable template
-├── .gitignore                    # Git hygiene (ignoring node_modules, .venv, caches)
-├── docker-compose.yml            # Multi-container orchestration (Postgres, Backend, Frontend)
+├── .gitignore                    # Git hygiene (ignoring node_modules, dist, caches, .db)
+├── docker-compose.yml            # Multi-container orchestration (Postgres, Node Backend, Frontend)
 └── README.md
 ```
 
@@ -63,12 +67,12 @@ stocksense/
 
 ## 3. Getting Started & Multi-Laptop Setup
 
-StockSense uses strictly relative paths and environment variable configurations to guarantee reproducible execution across Windows, Linux, and macOS.
+StockSense uses a **unified TypeScript/Node.js stack across both frontend and backend**. This ensures zero compilation discrepancies and flawless cross-laptop compatibility without requiring Python or Visual C++ tools.
 
 ### Prerequisites
 
 - **Node.js:** v18.0.0 or higher (v20+ recommended)
-- **Python:** v3.10 or higher (v3.11 / v3.13 supported)
+- **npm:** v9.0.0 or higher
 - **Git**
 - *(Optional)* **Docker & Docker Compose**
 
@@ -95,26 +99,17 @@ By default, `DATABASE_URL` in `.env.example` points to `sqlite:///./stocksense.d
 ```bash
 cd backend
 
-# Create virtual environment
-python -m venv .venv
-
-# Activate virtual environment
-# Windows (PowerShell):
-.venv\Scripts\Activate.ps1
-# macOS / Linux:
-source .venv/bin/activate
-
 # Install dependencies
-pip install -r requirements.txt
+npm install
 
-# Run backend test suite
-pytest
+# Run automated test suite
+npm test
 
-# Start FastAPI development server
-uvicorn app.main:app --reload --port 8000
+# Start development server with hot-reload
+npm run dev
 ```
 Backend API will be running at: `http://localhost:8000`  
-Interactive Swagger docs: `http://localhost:8000/docs`
+Live health check endpoint: `http://localhost:8000/api/v1/health`
 
 #### 4. Frontend Setup
 Open a new terminal:
@@ -133,7 +128,7 @@ Frontend application will be running at: `http://localhost:5173`
 
 ### Method B: Docker Compose Setup
 
-Run the entire stack with PostgreSQL, FastAPI backend, and Nginx frontend:
+Run the entire stack with PostgreSQL, Node.js backend, and Nginx frontend:
 ```bash
 docker compose up --build
 ```
@@ -162,10 +157,10 @@ Centralized design tokens are defined in `frontend/tailwind.config.js` and `fron
 
 ---
 
-## 5. Development Phases
+## 5. Development Roadmap
 
-- [x] **Phase 1 — Foundation** (Repository structure, Frontend Vite + TS + Tailwind, Backend FastAPI + SQLAlchemy, SQLite/Postgres multi-laptop configuration, Design Tokens, Docker Compose)
-- [ ] **Phase 2 — Authentication & Roles** (Login, Signup, Email OTP password reset, JWT, RBAC)
+- [x] **Phase 1 — Foundation (Node.js + TypeScript Backend)**
+- [ ] **Phase 2 — Authentication & Roles** (Login, Signup, Email OTP reset flow, JWT, RBAC)
 - [ ] **Phase 3 — Application Shell** (Top navigation with Odoo-style operational dropdowns, user profile, notifications)
 - [ ] **Phase 4 — Products & Catalog** (SKU, Categories, UoM, Unit Weight, On Hand, Free Stock)
 - [ ] **Phase 5 — Warehouses & Locations** (Warehouse Admin CRUD, compound location codes `WH/Stock`, `WH/Output`)
