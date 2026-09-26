@@ -1,181 +1,188 @@
-# StockSense — Modern Inventory Management System
+# StockSense — Modern Enterprise Inventory Management System
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)](https://expressjs.com/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-v20+-43853D?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.21-000000?style=flat&logo=express&logoColor=white)](https://expressjs.com/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-WAL_Mode-003B57?style=flat&logo=sqlite&logoColor=white)](https://sqlite.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Ready-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Vitest](https://img.shields.io/badge/Vitest-55_Tests_Passing-6E9F18?style=flat&logo=vitest&logoColor=white)](https://vitest.dev/)
 
-StockSense is an enterprise-grade Inventory Management System that replaces manual registers, spreadsheet-based stock tracking, and scattered warehouse notes with an auditable, real-time stock control engine.
+**StockSense** is an enterprise-grade SaaS Inventory Management System designed strictly to replace manual registers, error-prone spreadsheets, and fragmented notes with an auditable, real-time stock control engine.
 
-Built strictly according to operational wireframe standards, it implements deterministic ERP sequence formatting (`WH/IN/00001`, `WH/OUT/00001`), automated inventory availability checking, multi-warehouse location hierarchies, and line-level stock move ledger auditability.
-
----
-
-## 1. Key Features
-
-- **Inbound Receipts Workflow:** Vendor selection, destination assignment (`WH/Stock`), multi-item line inputs, print slip generation, and atomic validation increasing stock.
-- **Outbound Deliveries with Availability Engine:** Real-time stock reservation evaluation. Automatically transitions orders to `Waiting` when items are out-of-stock, or `Ready` when available, preventing negative stock.
-- **Internal Transfers:** Frictionless transfer between warehouse locations (`WH/Stock` $\rightarrow$ `WH/Production`, `Rack A` $\rightarrow$ `Rack B`) with company inventory neutrality and location-level balance updates.
-- **In-Table Stock Reconciliation:** Quick-reconciliation modal directly on the inventory table to align recorded stock with physical counts with mandatory audit reason logging.
-- **Comprehensive Stock Move History:** Complete ledger tracking every item move (`Receipt`, `Delivery`, `Transfer`, `Adjustment`) expanded into discrete line items.
-- **Warehouse & Location Hierarchy:** Multi-warehouse configuration with sub-locations (`WH/Stock`, `WH/Output`, `WH/Rack A`) restricted to Admin roles.
-- **Dual View Modes:** Toggle between high-density List View (default) and visual Kanban pipeline cards.
-- **Smart Operational Dashboard:** Actionable KPI cards displaying pending operation counts along with temporal breakdowns (`Late` $< \text{Today}$, `Today` $= \text{Today}$, `Waiting` for stock).
+Built around the core operational philosophy:
+$$\text{Receive} \longrightarrow \text{Store} \longrightarrow \text{Transfer} \longrightarrow \text{Deliver} \longrightarrow \text{Adjust} \longrightarrow \text{Track}$$
 
 ---
 
-## 2. Technical Architecture
+## 1. Key Highlights & Architectural Strengths
 
-```text
-stocksense/
-├── frontend/                     # React 18 + TypeScript + Vite + Tailwind CSS
-│   ├── src/
-│   │   ├── components/ui/        # Design Token UI Components (Button, Badge, Card, Input, Skeleton)
-│   │   ├── services/             # Type-safe API Client wrapper
-│   │   ├── types/                # Core TypeScript interfaces & status enums
-│   │   ├── App.tsx               # Root application view
-│   │   ├── index.css             # Tailwind directives & CSS variable tokens
-│   │   └── main.tsx              # Application entrypoint
-│   ├── tailwind.config.js        # Design tokens: primary indigo, surface, borders, alerts
-│   ├── tsconfig.json             # Modern bundler TS configuration
-│   ├── vite.config.ts            # Vite dev server & backend proxy
-│   └── package.json
-│
-├── backend/                      # Node.js + TypeScript + Express
-│   ├── src/
-│   │   ├── api/v1/               # Express API v1 routes & endpoints
-│   │   ├── config/               # Environment config & SQLite/PostgreSQL database engine
-│   │   ├── core/                 # Security utilities (bcryptjs, JWT)
-│   │   ├── middleware/           # Zod error handling & authentication middleware
-│   │   ├── types/                # Backend TypeScript interfaces
-│   │   ├── app.ts                # Express application configuration
-│   │   └── server.ts             # Application bootstrapping & server listener
-│   ├── tests/                    # Vitest integration test suite
-│   ├── Dockerfile                # Multi-stage production containerfile
-│   ├── tsconfig.json             # NodeNext TypeScript configuration
-│   └── package.json
-│
-├── .env.example                  # Documented environment variable template
-├── .gitignore                    # Git hygiene (ignoring node_modules, dist, caches, .db)
-├── docker-compose.yml            # Multi-container orchestration (Postgres, Node Backend, Frontend)
-└── README.md
-```
+- **100% Unified Node.js (TypeScript) Stack:** Engineered from ground up without Python or C++ compilation dependencies, ensuring instant, zero-friction setup across laptops running Windows, macOS, or Linux.
+- **Strict ERP Sequences:** Auto-generates standard ERP document sequence numbers:
+  - Inbound Receipts: `WH/IN/00001`
+  - Outbound Deliveries: `WH/OUT/00001`
+  - Internal Transfers: `WH/INT/00001`
+  - Stock Adjustments: `WH/ADJ/00001`
+- **Dynamic Availability Engine (`Waiting` vs `Ready`):** Automatically computes free stock ($\text{Free Stock} = \text{On Hand} - \text{Reserved}$). Prevents negative inventory by holding delivery orders in `Waiting` state until sufficient stock is received.
+- **Compound Warehouse Locations:** Multi-warehouse facility management with compound slash notation (`WH/Stock`, `WH/Output`, `WH/Rack A`) and positive-stock deletion protection.
+- **Stock Neutrality in Transfers:** Atomic transfer movements guarantee company-wide inventory balance neutrality ($\sum \text{Stock}_{\text{after}} = \sum \text{Stock}_{\text{before}}$).
+- **Immutable Audit Ledger:** Every single physical movement across all operations is atomically logged into `stock_history` with actor attribution, movement route, delta, and timestamps, complete with one-click CSV export.
+- **In-Table Quick Reconciliation & Standalone Physical Audits:** Instant inventory count adjustment directly from the product table or the dedicated Adjustments view, calculating deltas and logging `WH/ADJ/...` transactions.
+- **Interactive Operational Dashboard:** Live operational KPI cards directly reflecting document deadlines (`Late` $< \text{Today}$, `Today` $= \text{Today}$, `Waiting` for stock) with quick navigation shortcuts.
+- **Command Palette (`Ctrl+K`):** Global instant navigation across all modules, products, and operations.
 
 ---
 
-## 3. Getting Started & Multi-Laptop Setup
+## 2. Seeded Demo Credentials
 
-StockSense uses a **unified TypeScript/Node.js stack across both frontend and backend**. This ensures zero compilation discrepancies and flawless cross-laptop compatibility without requiring Python or Visual C++ tools.
+The database is pre-seeded with ready-to-test users, warehouses, demo catalog products, and sample operations:
+
+| Role | Login ID | Email | Password |
+| :--- | :--- | :--- | :--- |
+| **Administrator** | `admin` | `admin@stocksense.io` | `AdminPassword123!` |
+| **Inventory Manager** | `manager` | `manager@stocksense.io` | `ManagerPassword123!` |
+| **Warehouse Staff** | `staff` | `staff@stocksense.io` | `StaffPassword123!` |
+
+---
+
+## 3. Quick Start Guide
 
 ### Prerequisites
-
 - **Node.js:** v18.0.0 or higher (v20+ recommended)
 - **npm:** v9.0.0 or higher
 - **Git**
-- *(Optional)* **Docker & Docker Compose**
 
----
-
-### Method A: Local Development Setup
-
-#### 1. Clone the Repository
+### Step 1: Clone Repository
 ```bash
 git clone <repository-url>
 cd stocksense
 ```
 
-#### 2. Configure Environment Variables
+### Step 2: Configure Environment
 ```bash
-# Copy template to .env
+# On Linux/macOS
 cp .env.example .env
+
+# On Windows PowerShell
+Copy-Item .env.example .env
 ```
-*(On Windows PowerShell: `Copy-Item .env.example .env`)*
+*(By default, `DATABASE_URL` is set to SQLite WAL mode `sqlite:///./stocksense.db`, so no database installation is needed to start immediately. PostgreSQL is also fully supported by providing a standard connection string).*
 
-By default, `DATABASE_URL` in `.env.example` points to `sqlite:///./stocksense.db` for instant, zero-dependency onboarding without installing PostgreSQL locally. For PostgreSQL, simply provide your postgres connection string.
-
-#### 3. Backend Setup
+### Step 3: Run Backend & Test Suite
 ```bash
 cd backend
 
 # Install dependencies
 npm install
 
-# Run automated test suite
+# Run automated Vitest test suite (55 tests across 9 suites)
 npm test
 
-# Start development server with hot-reload
+# Start backend server with hot-reload
 npm run dev
 ```
-Backend API will be running at: `http://localhost:8000`  
-Live health check endpoint: `http://localhost:8000/api/v1/health`
+- **Backend API:** `http://localhost:8000`
+- **Health Check:** `http://localhost:8000/api/v1/health`
 
-#### 4. Frontend Setup
-Open a new terminal:
+### Step 4: Run Frontend Client
+In a separate terminal:
 ```bash
 cd frontend
 
 # Install dependencies
 npm install
 
-# Start Vite dev server
+# Build production bundle check
+npm run build
+
+# Start Vite development server
 npm run dev
 ```
-Frontend application will be running at: `http://localhost:5173`
+- **Frontend App:** `http://localhost:5173`
 
 ---
 
-### Method B: Docker Compose Setup
+## 4. API Specification & Endpoints
 
-Run the entire stack with PostgreSQL, Node.js backend, and Nginx frontend:
-```bash
-docker compose up --build
+| Group | Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- | :--- |
+| **System** | `GET` | `/api/v1/health` | Health check & engine status | No |
+| **Auth** | `POST` | `/api/v1/auth/signup` | Register new user + dispatch OTP | No |
+| **Auth** | `POST` | `/api/v1/auth/verify-otp` | Verify 6-digit OTP | No |
+| **Auth** | `POST` | `/api/v1/auth/login` | Login & receive JWT + Refresh token | No |
+| **Auth** | `POST` | `/api/v1/auth/forgot-password` | Request password reset OTP | No |
+| **Auth** | `POST` | `/api/v1/auth/reset-password` | Reset password using OTP | No |
+| **Dashboard** | `GET` | `/api/v1/dashboard/kpis` | Real-time operational counters & activity stream | Yes |
+| **Products** | `GET` | `/api/v1/products` | Paginated catalog with stock levels & status | Yes |
+| **Products** | `POST` | `/api/v1/products` | Create product with SKU uniqueness validation | Yes (Admin/Mgr) |
+| **Products** | `GET` | `/api/v1/products/:id` | Detailed product view with location breakdown | Yes |
+| **Products** | `PUT` | `/api/v1/products/:id` | Update product attributes | Yes (Admin/Mgr) |
+| **Products** | `DELETE`| `/api/v1/products/:id` | Protected delete (blocks if on-hand > 0) | Yes (Admin) |
+| **Products** | `POST` | `/api/v1/products/:id/adjust` | In-table quick count reconciliation | Yes |
+| **Warehouses** | `GET` | `/api/v1/warehouses` | List warehouses with location count & stock | Yes |
+| **Warehouses** | `POST` | `/api/v1/warehouses` | Create warehouse facility | Yes (Admin) |
+| **Locations** | `GET` | `/api/v1/warehouses/locations`| List compound location paths (`WH/Stock`) | Yes |
+| **Locations** | `POST` | `/api/v1/warehouses/locations`| Create compound location under warehouse | Yes (Admin) |
+| **Receipts** | `GET` | `/api/v1/receipts` | List inbound receipts (`WH/IN/...`) | Yes |
+| **Receipts** | `POST` | `/api/v1/receipts` | Create inbound receipt with line items | Yes |
+| **Receipts** | `POST` | `/api/v1/receipts/:id/mark-ready`| Transition Draft $\rightarrow$ Ready | Yes |
+| **Receipts** | `POST` | `/api/v1/receipts/:id/validate`| Validate & atomically increment stock | Yes |
+| **Deliveries** | `GET` | `/api/v1/deliveries` | List outbound delivery orders (`WH/OUT/...`)| Yes |
+| **Deliveries** | `POST` | `/api/v1/deliveries` | Create delivery order with availability check | Yes |
+| **Deliveries** | `POST` | `/api/v1/deliveries/:id/check-stock`| Re-evaluate availability (`Waiting` $\leftrightarrow$ `Ready`) | Yes |
+| **Deliveries** | `POST` | `/api/v1/deliveries/:id/validate`| Validate & atomically decrement stock | Yes |
+| **Transfers** | `GET` | `/api/v1/transfers` | List internal transfers (`WH/INT/...`) | Yes |
+| **Transfers** | `POST` | `/api/v1/transfers` | Create internal transfer | Yes |
+| **Transfers** | `POST` | `/api/v1/transfers/:id/validate` | Atomic location shift with neutral balance | Yes |
+| **History** | `GET` | `/api/v1/stock-history` | Paginated immutable audit ledger | Yes |
+| **History** | `GET` | `/api/v1/stock-history/adjustments`| Filtered physical count adjustments | Yes |
+| **History** | `POST` | `/api/v1/stock-history/adjustments`| Record physical inventory audit count | Yes |
+| **History** | `GET` | `/api/v1/stock-history/export/csv`| One-click CSV export of audit ledger | Yes |
+
+---
+
+## 5. Automated Test Suites
+
+The backend contains comprehensive integration test suites using Vitest and Supertest:
+
+```text
+ ✓ tests/products.test.ts    (12 tests) - CRUD, stock breakdown, in-table reconciliation, SKU checks
+ ✓ tests/transfers.test.ts   (5 tests)  - Internal transfers, location balance neutrality
+ ✓ tests/deliveries.test.ts  (6 tests)  - Availability engine, stock shortage check, deduction
+ ✓ tests/receipts.test.ts    (7 tests)  - Inbound validation, sequence generation, stock increment
+ ✓ tests/warehouses.test.ts  (7 tests)  - Multi-facility, compound paths, positive stock protection
+ ✓ tests/auth.test.ts        (9 tests)  - Signup OTP, Login JWT, Reset Password OTP, RBAC
+ ✓ tests/history.test.ts     (5 tests)  - Stock move ledger, adjustments creation, CSV export
+ ✓ tests/dashboard.test.ts   (2 tests)  - Operational counters (Late, Today, Waiting), metrics
+ ✓ tests/health.test.ts      (2 tests)  - System health ping and engine verification
+
+ Test Files  9 passed (9)
+      Tests  55 passed (55)
 ```
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:8000`
-- PostgreSQL: `localhost:5432`
+
+Run tests anytime with:
+```bash
+cd backend && npm test
+```
 
 ---
 
-## 4. Design Tokens & Styling System
+## 6. Implementation Progress Summary
 
-Centralized design tokens are defined in `frontend/tailwind.config.js` and `frontend/src/index.css`:
-
-| Token | Semantic Purpose | Light Value |
-| :--- | :--- | :--- |
-| `brand-600` | Primary action / brand identity | `#4f46e5` (Indigo) |
-| `surface` | Card & container backgrounds | `#ffffff` |
-| `surface-muted` | Page canvas background | `#f8fafc` (Slate 50) |
-| `border-subtle` | Card & divider borders | `#e2e8f0` (Slate 200) |
-| `content-primary` | High-emphasis body text & headings | `#0f172a` (Slate 900) |
-| `content-secondary`| Secondary labels & subtitles | `#475569` (Slate 600) |
-| `badge-draft` | Initial document draft state | Slate 100 / Slate 700 |
-| `badge-waiting` | Stock unavailable / blocked state | Amber 50 / Amber 700 |
-| `badge-ready` | Available / ready to process | Indigo 50 / Indigo 700 |
-| `badge-done` | Validated / completed movement | Emerald 50 / Emerald 700 |
+- [x] **Phase 1 — Foundation & Architecture:** Unified TypeScript stack across frontend and backend, multi-engine SQLite/Postgres DB layer.
+- [x] **Phase 2 — Authentication & RBAC:** Signup OTP verification, JWT authentication, Forgot Password OTP flow, and role-based permissions (`admin`, `inventory_manager`, `warehouse_staff`).
+- [x] **Phase 3 — Application Shell:** ERP top navigation, warehouse facility switcher, Command Palette (`Ctrl+K`), notifications drawer, mobile drawer.
+- [x] **Phase 4 — Products & Catalog:** Table & Kanban views, SKU uniqueness validation, live stock health pills, product detail drawer with location breakdown, quick reconciliation modal.
+- [x] **Phase 5 — Warehouses & Locations:** Multi-facility management, compound paths (`WH/Stock`, `WH/Output`), positive stock deletion guards.
+- [x] **Phase 6 — Inbound Receipts:** ERP sequence generator (`WH/IN/00001`), Draft $\rightarrow$ Ready $\rightarrow$ Done stepper, dynamic line items, atomic inventory increment on validation.
+- [x] **Phase 7 — Outbound Deliveries:** ERP sequence generator (`WH/OUT/00001`), real-time availability check engine (`Waiting` vs `Ready`), atomic deduction on dispatch.
+- [x] **Phase 8 — Internal Transfers:** ERP sequence generator (`WH/INT/00001`), location-to-location shifting with company-wide balance neutrality and audit trail.
+- [x] **Phase 9 — Stock Move History & Adjustments:** Immutable audit ledger with CSV export, standalone Physical Inventory Adjustments view (`WH/ADJ/00001`), delta computation.
+- [x] **Phase 10 — Operational KPI Dashboard:** Live real-time operational KPI cards with Late, Today, Waiting counters, catalog health overview, recent operations and ledger streams.
+- [x] **Phase 11 — End-to-End Verification:** 55 tests passing, production build compiled with 0 errors.
 
 ---
 
-## 5. Development Roadmap
-
-- [x] **Phase 1 — Foundation (Node.js + TypeScript Backend)**
-- [ ] **Phase 2 — Authentication & Roles** (Login, Signup, Email OTP reset flow, JWT, RBAC)
-- [ ] **Phase 3 — Application Shell** (Top navigation with Odoo-style operational dropdowns, user profile, notifications)
-- [ ] **Phase 4 — Products & Catalog** (SKU, Categories, UoM, Unit Weight, On Hand, Free Stock)
-- [ ] **Phase 5 — Warehouses & Locations** (Warehouse Admin CRUD, compound location codes `WH/Stock`, `WH/Output`)
-- [ ] **Phase 6 — Inbound Receipts** (Sequence `WH/IN/00001`, line items, validation, print slip)
-- [ ] **Phase 7 — Outbound Deliveries** (Sequence `WH/OUT/00001`, availability check engine, `Waiting`/`Ready`)
-- [ ] **Phase 8 — Internal Transfers** (Sequence `WH/INT/00001`, location movement balance)
-- [ ] **Phase 9 — In-Table Stock Adjustments** (Physical vs recorded reconciliation, delta audit)
-- [ ] **Phase 10 — Dashboard** (KPI cards with Late, Today, Waiting metrics, interactive filters)
-- [ ] **Phase 11 — Move History / Stock Ledger** (Full audit trail, multi-item line breakdown, CSV/print export)
-- [ ] **Phase 12 — Global Search & Notifications** (Ctrl+K palette, stock threshold alerts)
-- [ ] **Phase 13 — UI Polish & Micro-interactions**
-- [ ] **Phase 14 — QA & End-to-End Tests**
-- [ ] **Phase 15 — Release & Production Packaging**
-
----
-
-## 6. License
-Proprietary — Internal Inventory Platform.
+## 7. License
+Proprietary — Internal StockSense SaaS Platform.
