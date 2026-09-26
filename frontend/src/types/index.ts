@@ -164,3 +164,57 @@ export interface ReceiptDetailApiResponse {
     items: ReceiptItem[];
   };
 }
+
+export interface Delivery {
+  id: number;
+  reference: string;
+  operation_type: 'OUT';
+  warehouse_id: number;
+  warehouse_name: string;
+  warehouse_code: string;
+  partner_name: string;
+  source_location_id: number | null;
+  source_path: string;
+  source_name: string;
+  destination_location_id: number | null;
+  destination_path: string;
+  destination_name: string;
+  scheduled_date: string;
+  status: DocumentStatus;
+  notes: string;
+  created_by_user: string;
+  created_at: string;
+  validated_at?: string;
+  total_items: number;
+  total_demand: number;
+  total_done: number;
+}
+
+export interface DeliveryItem {
+  id: number;
+  operation_id: number;
+  product_id: number;
+  product_name: string;
+  product_sku: string;
+  product_category: string;
+  product_uom: string;
+  per_unit_weight: number;
+  demand_qty: number;
+  done_qty: number;
+  current_on_hand: number;
+  free_stock: number;
+  is_available: boolean;
+}
+
+export interface DeliveriesApiResponse {
+  success: boolean;
+  data: Delivery[];
+}
+
+export interface DeliveryDetailApiResponse {
+  success: boolean;
+  data: {
+    delivery: Delivery;
+    items: DeliveryItem[];
+  };
+}

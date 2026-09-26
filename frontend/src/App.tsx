@@ -9,6 +9,7 @@ import { AppShell } from './components/layout/AppShell';
 import { StockView } from './components/products/StockView';
 import { WarehouseView } from './components/warehouses/WarehouseView';
 import { ReceiptsView } from './components/operations/ReceiptsView';
+import { DeliveriesView } from './components/operations/DeliveriesView';
 import { Card } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
 import { Button } from './components/ui/Button';
@@ -221,14 +222,7 @@ const ViewRouter: React.FC = () => {
     case 'receipts':
       return <ReceiptsView />;
     case 'deliveries':
-      return (
-        <PlaceholderOperationalView
-          title="Outbound Deliveries"
-          subtitle="Customer dispatch, reservation evaluation, and automatic Waiting / Ready status logic"
-          codePrefix="WH/OUT/00001"
-          icon={<Truck className="w-6 h-6" />}
-        />
-      );
+      return <DeliveriesView />;
     case 'transfers':
       return (
         <PlaceholderOperationalView

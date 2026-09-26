@@ -15,6 +15,7 @@ describe('Products & Stock Reconciliation Endpoints', () => {
     await db.execute("DELETE FROM stock_history WHERE product_id IN (SELECT id FROM products WHERE sku = 'CPR-WIR-08')");
     await db.execute("DELETE FROM stock_levels WHERE product_id IN (SELECT id FROM products WHERE sku = 'CPR-WIR-08')");
     await db.execute("DELETE FROM products WHERE sku = 'CPR-WIR-08'");
+    await db.execute("UPDATE stock_levels SET on_hand = 50 WHERE product_id IN (SELECT id FROM products WHERE sku = 'STL-ROD-01')");
 
     // Login as seeded admin
     const adminRes = await request(app).post('/api/v1/auth/login').send({
