@@ -1,144 +1,297 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { NavigationProvider, useNavigation } from './context/NavigationContext';
 import { LoginCard } from './components/auth/LoginCard';
 import { SignupCard } from './components/auth/SignupCard';
 import { OtpVerificationModal } from './components/auth/OtpVerificationModal';
 import { ForgotPasswordModal } from './components/auth/ForgotPasswordModal';
-import { Badge } from './components/ui/Badge';
+import { AppShell } from './components/layout/AppShell';
 import { Card } from './components/ui/Card';
+import { Badge } from './components/ui/Badge';
 import { Button } from './components/ui/Button';
 import {
   Boxes,
-  LogOut,
   ShieldCheck,
   PackagePlus,
   Truck,
   ArrowRightLeft,
+  SlidersHorizontal,
+  History,
   Warehouse,
+  MapPin,
+  Clock,
+  AlertCircle,
+  Plus,
+  Filter,
 } from 'lucide-react';
 
-const AuthenticatedDashboard: React.FC = () => {
-  const { user, logout } = useAuth();
+const DashboardView: React.FC = () => {
+  const { user } = useAuth();
+  const { setCurrentView } = useNavigation();
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-subtle">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-              <Boxes className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-lg tracking-tight text-slate-900">StockSense</span>
-                <span className="px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase bg-brand-50 text-brand-700 border border-brand-200 rounded">
-                  Phase 2 — Auth & Roles
-                </span>
-              </div>
-              <p className="text-xs text-slate-500">Centralized SaaS Inventory Platform</p>
-            </div>
+    <div className="space-y-6">
+      {/* Welcome Banner matching section 10 of prompt */}
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Authenticated Session Active</span>
           </div>
-
-          {/* User profile & actions */}
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-lg text-xs">
-              <Warehouse className="w-3.5 h-3.5 text-slate-500" />
-              <span className="text-slate-600 font-medium">Main Warehouse (WH)</span>
-            </div>
-
-            <div className="flex items-center gap-3 border-l border-slate-200 pl-4">
-              <div className="w-8 h-8 rounded-full bg-brand-100 border border-brand-200 flex items-center justify-center text-brand-700 font-bold text-xs">
-                {user?.name ? user.name[0].toUpperCase() : 'U'}
-              </div>
-              <div className="hidden md:block text-left text-xs">
-                <div className="font-semibold text-slate-900 leading-tight">{user?.name}</div>
-                <div className="text-[11px] font-mono text-brand-600 capitalize">
-                  {user?.role.replace('_', ' ')}
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={logout}
-                className="text-slate-500 hover:text-rose-600"
-                title="Sign out"
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Welcome Banner */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Authenticated Session Active</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Good morning, {user?.name}
-            </h1>
-            <p className="text-sm text-slate-600">
-              Here is what is happening with your warehouse inventory today.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Badge variant="ready" dot>
-              Role: {user?.role.replace('_', ' ').toUpperCase()}
-            </Badge>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Good morning, {user?.name}
+          </h1>
+          <p className="text-sm text-slate-600">
+            Here's what's happening with your inventory today.
+          </p>
         </div>
 
-        {/* Operational Flow Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm">
-                <PackagePlus className="w-4 h-4 text-emerald-600" />
-                <h3>Receipts (Inbound)</h3>
-              </div>
-              <Badge variant="ready">WH/IN/00001</Badge>
-            </div>
-            <p className="text-xs text-slate-500">
-              Vendor delivery acceptance with atomic inventory increments and move ledger updates.
-            </p>
-          </Card>
-
-          <Card className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm">
-                <Truck className="w-4 h-4 text-indigo-600" />
-                <h3>Deliveries (Outbound)</h3>
-              </div>
-              <Badge variant="waiting">WH/OUT/00001</Badge>
-            </div>
-            <p className="text-xs text-slate-500">
-              Customer dispatch with automated stock availability checks (Ready vs Waiting).
-            </p>
-          </Card>
-
-          <Card className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm">
-                <ArrowRightLeft className="w-4 h-4 text-amber-600" />
-                <h3>Internal Transfers</h3>
-              </div>
-              <Badge variant="neutral">WH/INT/00001</Badge>
-            </div>
-            <p className="text-xs text-slate-500">
-              Location-to-location shifting (e.g. WH/Stock to WH/Production) with net company neutrality.
-            </p>
-          </Card>
+        <div className="flex items-center gap-2">
+          <Badge variant="ready" dot>
+            Role: {user?.role.replace('_', ' ').toUpperCase()}
+          </Badge>
         </div>
-      </main>
+      </div>
+
+      {/* Operational KPI Action Cards strictly from diagram wireframe */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Receipt Card from wireframe */}
+        <Card className="space-y-4 border-l-4 border-l-emerald-500">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 font-bold text-base text-slate-900">
+              <PackagePlus className="w-5 h-5 text-emerald-600" />
+              <span>Receipts</span>
+            </div>
+            <Badge variant="ready">WH/IN/00001</Badge>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => setCurrentView('receipts')}
+              className="bg-emerald-600 hover:bg-emerald-700 font-bold"
+            >
+              150 To Receive / Process
+            </Button>
+
+            {/* Wireframe sub-metrics */}
+            <div className="space-y-1 text-xs text-slate-600 border-l border-slate-200 pl-4">
+              <div className="flex items-center gap-1.5 text-rose-700 font-medium">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Late: 4 operations</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-700 font-medium">
+                <span>Operations (Today): 12</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-amber-700 font-medium">
+                <span>Waiting: 2 vendor dispatches</span>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Delivery Card from wireframe */}
+        <Card className="space-y-4 border-l-4 border-l-indigo-500">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 font-bold text-base text-slate-900">
+              <Truck className="w-5 h-5 text-indigo-600" />
+              <span>Deliveries</span>
+            </div>
+            <Badge variant="waiting">WH/OUT/00001</Badge>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => setCurrentView('deliveries')}
+              className="bg-indigo-600 hover:bg-indigo-700 font-bold"
+            >
+              40 To Deliver / Dispatch
+            </Button>
+
+            {/* Wireframe sub-metrics */}
+            <div className="space-y-1 text-xs text-slate-600 border-l border-slate-200 pl-4">
+              <div className="flex items-center gap-1.5 text-rose-700 font-medium">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Late: 1 operation</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-700 font-medium">
+                <span>Operations (Today): 8</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-amber-700 font-medium">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                <span>Waiting: 3 (Stock Unavailable)</span>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Internal Transfer & Reconciliation row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 font-bold text-sm text-slate-900">
+              <ArrowRightLeft className="w-4 h-4 text-amber-600" />
+              <span>Internal Transfers</span>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setCurrentView('transfers')}>
+              Open Transfers
+            </Button>
+          </div>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Move inventory between warehouse locations (e.g. WH/Stock to WH/Production). Total company balance remains constant.
+          </p>
+        </Card>
+
+        <Card className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 font-bold text-sm text-slate-900">
+              <SlidersHorizontal className="w-4 h-4 text-rose-600" />
+              <span>Stock Adjustments</span>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setCurrentView('adjustments')}>
+              Reconcile Count
+            </Button>
+          </div>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Directly reconcile physical stock count with system quantity and automatically commit auditable deltas.
+          </p>
+        </Card>
+      </div>
     </div>
   );
+};
+
+const PlaceholderOperationalView: React.FC<{
+  title: string;
+  subtitle: string;
+  codePrefix: string;
+  icon: React.ReactNode;
+}> = ({ title, subtitle, codePrefix, icon }) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-card">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-brand-50 border border-brand-200 rounded-xl text-brand-600">
+            {icon}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-slate-900">{title}</h1>
+              <Badge variant="ready">{codePrefix}</Badge>
+            </div>
+            <p className="text-xs text-slate-500">{subtitle}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm">
+            <Filter className="w-3.5 h-3.5 mr-1" /> Filter
+          </Button>
+          <Button size="sm">
+            <Plus className="w-3.5 h-3.5 mr-1" /> New Operation
+          </Button>
+        </div>
+      </div>
+
+      {/* Wireframe placeholder table card */}
+      <Card className="p-8 text-center space-y-3">
+        <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+          {icon}
+        </div>
+        <h3 className="font-bold text-sm text-slate-800">{title} Engine Active</h3>
+        <p className="text-xs text-slate-500 max-w-md mx-auto">
+          Operational workflow scaffolding loaded. Products and line items will be populated in subsequent phases.
+        </p>
+      </Card>
+    </div>
+  );
+};
+
+const ViewRouter: React.FC = () => {
+  const { currentView } = useNavigation();
+
+  switch (currentView) {
+    case 'dashboard':
+      return <DashboardView />;
+    case 'receipts':
+      return (
+        <PlaceholderOperationalView
+          title="Inbound Receipts"
+          subtitle="Vendor delivery reception, destination bin assignment, and inventory increments"
+          codePrefix="WH/IN/00001"
+          icon={<PackagePlus className="w-6 h-6" />}
+        />
+      );
+    case 'deliveries':
+      return (
+        <PlaceholderOperationalView
+          title="Outbound Deliveries"
+          subtitle="Customer dispatch, reservation evaluation, and automatic Waiting / Ready status logic"
+          codePrefix="WH/OUT/00001"
+          icon={<Truck className="w-6 h-6" />}
+        />
+      );
+    case 'transfers':
+      return (
+        <PlaceholderOperationalView
+          title="Internal Transfers"
+          subtitle="Bin-to-bin and location-to-location internal shifting"
+          codePrefix="WH/INT/00001"
+          icon={<ArrowRightLeft className="w-6 h-6" />}
+        />
+      );
+    case 'adjustments':
+      return (
+        <PlaceholderOperationalView
+          title="Stock Adjustments"
+          subtitle="Reconciliation of recorded vs physical counts with delta logging"
+          codePrefix="WH/ADJ/00001"
+          icon={<SlidersHorizontal className="w-6 h-6" />}
+        />
+      );
+    case 'stock':
+      return (
+        <PlaceholderOperationalView
+          title="Stock Availability Table"
+          subtitle="Product catalog, per unit weight, on hand, and free stock levels"
+          codePrefix="Products & Bins"
+          icon={<Boxes className="w-6 h-6" />}
+        />
+      );
+    case 'stock-history':
+      return (
+        <PlaceholderOperationalView
+          title="Stock Move History"
+          subtitle="Auditable immutable ledger recording every item movement line by line"
+          codePrefix="Audit Ledger"
+          icon={<History className="w-6 h-6" />}
+        />
+      );
+    case 'warehouses':
+      return (
+        <PlaceholderOperationalView
+          title="Warehouses Management"
+          subtitle="Multi-warehouse facilities and address configurations (Admin only)"
+          codePrefix="Warehouses"
+          icon={<Warehouse className="w-6 h-6" />}
+        />
+      );
+    case 'locations':
+      return (
+        <PlaceholderOperationalView
+          title="Locations Management"
+          subtitle="Hierarchical sub-locations (WH/Stock, WH/Output, Racks)"
+          codePrefix="Locations"
+          icon={<MapPin className="w-6 h-6" />}
+        />
+      );
+    default:
+      return <DashboardView />;
+  }
 };
 
 const AuthScreen: React.FC = () => {
@@ -156,7 +309,6 @@ const AuthScreen: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8">
-      {/* Background ambient glow */}
       <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/50 via-slate-50 to-slate-50 pointer-events-none" />
 
       <div className="relative z-10 w-full flex flex-col items-center">
@@ -173,7 +325,6 @@ const AuthScreen: React.FC = () => {
         )}
       </div>
 
-      {/* OTP Verification Modal */}
       <OtpVerificationModal
         email={pendingEmail}
         purpose="signup"
@@ -182,7 +333,6 @@ const AuthScreen: React.FC = () => {
         onClose={() => setOtpModalOpen(false)}
       />
 
-      {/* Forgot Password Modal */}
       <ForgotPasswordModal
         isOpen={forgotPasswordOpen}
         onClose={() => setForgotPasswordOpen(false)}
@@ -210,13 +360,21 @@ export const AppContent: React.FC = () => {
     );
   }
 
-  return isAuthenticated ? <AuthenticatedDashboard /> : <AuthScreen />;
+  return isAuthenticated ? (
+    <AppShell>
+      <ViewRouter />
+    </AppShell>
+  ) : (
+    <AuthScreen />
+  );
 };
 
 export const App: React.FC = () => {
   return (
     <AuthProvider>
-      <AppContent />
+      <NavigationProvider>
+        <AppContent />
+      </NavigationProvider>
     </AuthProvider>
   );
 };
