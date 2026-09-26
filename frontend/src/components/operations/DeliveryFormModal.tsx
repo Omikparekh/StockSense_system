@@ -141,29 +141,29 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
       <div 
-        className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="bg-white dark:bg-[#121212] rounded-3xl shadow-2xl max-w-2xl w-full border border-slate-200 dark:border-white/[0.08] overflow-hidden animate-in fade-in zoom-in-95 duration-150"
         role="dialog"
       >
         {/* Header */}
-        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-[#151515] border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+            <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500">
               <Truck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-slate-900 dark:text-[#F5F5F5]">
                 Create Outbound Delivery Order
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-[#A5A5A5]">
                 Generate customer dispatch operation (WH/OUT) with real-time stock evaluation
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-200/60 dark:hover:bg-white/[0.06] transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -172,7 +172,7 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-lg flex items-start space-x-2 text-red-700 dark:text-red-300 text-sm">
+            <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl flex items-start space-x-2 text-red-700 dark:text-red-300 text-sm">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               <span>{error}</span>
             </div>
@@ -181,7 +181,7 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Customer Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-[#A5A5A5] uppercase tracking-wider mb-1">
                 Customer / Client *
               </label>
               <input
@@ -190,13 +190,13 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
                 placeholder="e.g. Apex Construction Corp"
                 value={partnerName}
                 onChange={(e) => setPartnerName(e.target.value)}
-                className="w-full h-10 px-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full h-10 px-3 border border-slate-300 dark:border-white/[0.1] rounded-xl bg-white dark:bg-[#0E0E0E] text-slate-900 dark:text-[#F5F5F5] placeholder-slate-400 dark:placeholder-[#505050] text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
               />
             </div>
 
             {/* Scheduled Date */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-[#A5A5A5] uppercase tracking-wider mb-1">
                 Dispatch Date *
               </label>
               <div className="relative">
@@ -205,21 +205,21 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
                   required
                   value={scheduledDate}
                   onChange={(e) => setScheduledDate(e.target.value)}
-                  className="w-full h-10 pl-3 pr-9 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full h-10 pl-3 pr-9 border border-slate-300 dark:border-white/[0.1] rounded-xl bg-white dark:bg-[#0E0E0E] text-slate-900 dark:text-[#F5F5F5] text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
-                <Calendar className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+                <Calendar className="w-4 h-4 text-slate-400 dark:text-[#707070] absolute right-3 top-3 pointer-events-none" />
               </div>
             </div>
 
             {/* Warehouse */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-[#A5A5A5] uppercase tracking-wider mb-1">
                 Source Warehouse *
               </label>
               <select
                 value={warehouseId}
                 onChange={(e) => setWarehouseId(Number(e.target.value))}
-                className="w-full h-10 px-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full h-10 px-3 border border-slate-300 dark:border-white/[0.1] rounded-xl bg-white dark:bg-[#0E0E0E] text-slate-900 dark:text-[#F5F5F5] text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
               >
                 {warehouses.map((w) => (
                   <option key={w.id} value={w.id}>
@@ -231,13 +231,13 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
 
             {/* Source Storage Location */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-[#A5A5A5] uppercase tracking-wider mb-1">
                 Source Storage Bin *
               </label>
               <select
                 value={sourceLocationId}
                 onChange={(e) => setSourceLocationId(Number(e.target.value))}
-                className="w-full h-10 px-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono font-medium"
+                className="w-full h-10 px-3 border border-slate-300 dark:border-white/[0.1] rounded-xl bg-white dark:bg-[#0E0E0E] text-slate-900 dark:text-[#F5F5F5] text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-mono font-medium"
               >
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
@@ -250,7 +250,7 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-[#A5A5A5] uppercase tracking-wider mb-1">
               Dispatch Instructions / Shipping Notes
             </label>
             <input
@@ -258,20 +258,20 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
               placeholder="e.g. Gate 3 delivery, Contact: Ramesh (Supervisor)"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full h-9 px-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full h-9 px-3 border border-slate-300 dark:border-white/[0.1] rounded-xl bg-white dark:bg-[#0E0E0E] text-slate-900 dark:text-[#F5F5F5] placeholder-slate-400 dark:placeholder-[#505050] text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
             />
           </div>
 
           {/* Availability Alert Banner */}
           {hasShortage ? (
-            <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg text-xs text-amber-800 dark:text-amber-300 flex items-start space-x-2">
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-start space-x-2">
               <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold">Stock Shortage Detected:</span> One or more selected items exceed currently available free stock. This delivery order will be initialized in <span className="font-bold underline">Waiting</span> status until replenished.
               </div>
             </div>
           ) : (
-            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg text-xs text-emerald-800 dark:text-emerald-300 flex items-center space-x-2">
+            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs text-emerald-800 dark:text-emerald-300 flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
               <span>All requested items are currently available in stock. Order will initialize as <strong>Ready</strong> for immediate dispatch.</span>
             </div>
@@ -280,22 +280,22 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
           {/* Line Items Table */}
           <div className="space-y-2 pt-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+              <span className="text-xs font-bold text-slate-800 dark:text-[#F5F5F5] uppercase tracking-wider">
                 Products to Dispatch ({items.length})
               </span>
               <button
                 type="button"
                 onClick={handleAddItem}
-                className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 flex items-center space-x-1"
+                className="text-xs font-semibold text-brand-500 hover:text-brand-400 flex items-center space-x-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Product</span>
               </button>
             </div>
 
-            <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden max-h-56 overflow-y-auto">
+            <div className="border border-slate-200 dark:border-white/[0.08] rounded-2xl overflow-hidden max-h-56 overflow-y-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-700 sticky top-0">
+                <thead className="bg-slate-50 dark:bg-[#181818] text-slate-600 dark:text-[#A5A5A5] font-semibold border-b border-slate-200 dark:border-white/[0.08] sticky top-0">
                   <tr>
                     <th className="py-2 px-3">Product</th>
                     <th className="py-2 px-3 text-right">Available</th>
@@ -303,18 +303,18 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
                     <th className="py-2 px-3 text-center w-12">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.05]">
                   {items.map((item, index) => {
                     const prod = products.find(p => p.id === Number(item.product_id));
                     const isShortage = (prod?.free_stock || 0) < item.demand_qty;
 
                     return (
-                      <tr key={index} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
+                      <tr key={index} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02]">
                         <td className="py-2 px-3">
                           <select
                             value={item.product_id}
                             onChange={(e) => handleItemChange(index, 'product_id', Number(e.target.value))}
-                            className="w-full h-8 px-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
+                            className="w-full h-8 px-2 border border-slate-300 dark:border-white/[0.1] rounded-lg bg-white dark:bg-[#0E0E0E] text-slate-900 dark:text-[#F5F5F5] text-xs focus:outline-none focus:ring-1 focus:ring-brand-500 font-medium"
                           >
                             {products.map((p) => (
                               <option key={p.id} value={p.id}>
@@ -323,7 +323,7 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
                             ))}
                           </select>
                         </td>
-                        <td className="py-2 px-3 text-right font-mono font-medium text-slate-600 dark:text-slate-400">
+                        <td className="py-2 px-3 text-right font-mono font-medium text-slate-600 dark:text-[#A5A5A5]">
                           {prod?.free_stock || 0} {prod?.uom || ''}
                         </td>
                         <td className="py-2 px-3 text-right">
@@ -335,13 +335,13 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
                               required
                               value={item.demand_qty}
                               onChange={(e) => handleItemChange(index, 'demand_qty', parseFloat(e.target.value) || 0)}
-                              className={`w-20 h-8 px-2 text-right border rounded text-xs font-bold focus:outline-none focus:ring-1 ${
+                              className={`w-20 h-8 px-2 text-right border rounded-lg text-xs font-bold focus:outline-none focus:ring-1 ${
                                 isShortage 
                                   ? 'border-amber-400 dark:border-amber-600 bg-amber-50 dark:bg-amber-950/50 text-amber-900 dark:text-amber-200 focus:ring-amber-500' 
-                                  : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-indigo-500'
+                                  : 'border-slate-300 dark:border-white/[0.1] bg-white dark:bg-[#0E0E0E] text-slate-900 dark:text-[#F5F5F5] focus:ring-brand-500'
                               }`}
                             />
-                            <span className="text-slate-500 dark:text-slate-400 text-[11px] w-8 text-left truncate">
+                            <span className="text-slate-500 dark:text-[#707070] text-[11px] w-8 text-left truncate">
                               {prod?.uom || 'Units'}
                             </span>
                           </div>
@@ -351,7 +351,7 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
                             <button
                               type="button"
                               onClick={() => handleRemoveItem(index)}
-                              className="p-1 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition"
+                              className="p-1 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -366,23 +366,23 @@ export const DeliveryFormModal: React.FC<DeliveryFormModalProps> = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end space-x-3">
+          <div className="pt-3 border-t border-slate-200 dark:border-white/[0.08] flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+              className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-[#A5A5A5] hover:bg-slate-100 dark:hover:bg-white/[0.06] rounded-xl transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition disabled:opacity-50 flex items-center space-x-2"
+              className="px-5 py-2 text-sm font-bold text-black bg-brand-500 hover:bg-brand-600 rounded-xl shadow-sm transition hover:shadow-orange-950/20 disabled:opacity-50 flex items-center space-x-2"
             >
               {loading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
                   <span>Creating Order...</span>
                 </>
               ) : (

@@ -167,10 +167,10 @@ export const SuppliersView: React.FC = () => {
           <button
             onClick={() => fetchSuppliers()}
             disabled={refreshing}
-            className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg transition"
+            className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] rounded-xl transition"
             title="Refresh Suppliers"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-brand-500' : ''}`} />
           </button>
 
           {isAdminOrManager && (
@@ -179,7 +179,7 @@ export const SuppliersView: React.FC = () => {
                 setEditingSupplier(null);
                 setIsModalOpen(true);
               }}
-              className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm flex items-center space-x-1.5 transition"
+              className="px-4 py-2 text-xs font-semibold text-slate-950 bg-brand-500 hover:bg-brand-400 rounded-xl shadow-glow-orange flex items-center space-x-1.5 transition-all hover:-translate-y-0.5"
             >
               <Plus className="w-4 h-4" />
               <span>Add Supplier</span>
@@ -190,8 +190,8 @@ export const SuppliersView: React.FC = () => {
 
       {/* KPI Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+        <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500 shrink-0">
             <Building2 className="w-5 h-5" />
           </div>
           <div>
@@ -202,8 +202,8 @@ export const SuppliersView: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+        <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-800/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
             <Truck className="w-5 h-5" />
           </div>
           <div>
@@ -214,8 +214,8 @@ export const SuppliersView: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+        <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-800/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
             <IndianRupee className="w-5 h-5" />
           </div>
           <div>
@@ -228,7 +228,7 @@ export const SuppliersView: React.FC = () => {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card">
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
           <input
@@ -236,23 +236,23 @@ export const SuppliersView: React.FC = () => {
             placeholder="Search suppliers by company name, contact person, email, phone, or tax ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500"
+            className="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-white/[0.08] bg-white dark:bg-[#151515] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500"
           />
         </div>
       </div>
 
       {/* Suppliers Table & Cards */}
       {loading ? (
-        <div className="py-20 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center space-y-3 text-slate-500 dark:text-slate-400">
-          <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm">Loading suppliers registry...</p>
+        <div className="py-20 bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] flex flex-col items-center justify-center space-y-3 text-slate-500 dark:text-slate-400">
+          <div className="w-8 h-8 border-3 border-brand-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm font-medium">Loading suppliers registry...</p>
         </div>
       ) : error ? (
-        <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl text-red-700 dark:text-red-300 text-sm">
+        <div className="p-4 bg-red-50 dark:bg-rose-950/40 border border-red-200 dark:border-rose-900/50 rounded-2xl text-red-700 dark:text-rose-300 text-sm">
           {error}
         </div>
       ) : filteredSuppliers.length === 0 ? (
-        <div className="py-16 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-center p-6 space-y-3">
+        <div className="py-16 bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] text-center p-6 space-y-3">
           <Building2 className="w-10 h-10 text-slate-400 mx-auto" />
           <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">No suppliers found</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -265,10 +265,10 @@ export const SuppliersView: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
+              <thead className="bg-slate-50 dark:bg-[#151515] text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/[0.08]">
                 <tr>
                   <th className="py-3 px-4">Supplier / Vendor</th>
                   <th className="py-3 px-4">Contact Person</th>

@@ -84,12 +84,12 @@ export const WarehouseModal: React.FC<WarehouseModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div 
-        className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="bg-white dark:bg-[#121212] rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-white/[0.08] overflow-hidden animate-in fade-in zoom-in-95 duration-150"
         role="dialog"
       >
-        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-[#151515] border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+            <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500">
               <WarehouseIcon className="w-5 h-5" />
             </div>
             <div>
@@ -103,7 +103,7 @@ export const WarehouseModal: React.FC<WarehouseModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-200/60 dark:hover:bg-white/[0.06] transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -168,31 +168,31 @@ export const WarehouseModal: React.FC<WarehouseModalProps> = ({
           </div>
 
           {!isEdit && (
-            <div className="p-3 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 rounded-lg text-xs text-indigo-900 dark:text-indigo-200 flex items-start space-x-2">
-              <CheckCircle2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0" />
+            <div className="p-3 bg-brand-500/10 border border-brand-500/20 rounded-xl text-xs text-brand-900 dark:text-brand-300 flex items-start space-x-2">
+              <CheckCircle2 className="w-4 h-4 text-brand-500 mt-0.5 shrink-0" />
               <div>
-                <span className="font-semibold">Automatic Provisioning:</span> Creating this warehouse will automatically initialize default storage locations: <code className="font-mono bg-indigo-100 dark:bg-indigo-900/60 px-1 py-0.5 rounded text-indigo-800 dark:text-indigo-200 font-semibold">{shortCode || 'CODE'}/Stock</code> and <code className="font-mono bg-indigo-100 dark:bg-indigo-900/60 px-1 py-0.5 rounded text-indigo-800 dark:text-indigo-200 font-semibold">{shortCode || 'CODE'}/Output</code>.
+                <span className="font-semibold">Automatic Provisioning:</span> Creating this warehouse will automatically initialize default storage locations: <code className="font-mono bg-brand-500/20 px-1 py-0.5 rounded text-brand-300 font-semibold">{shortCode || 'CODE'}/Stock</code> and <code className="font-mono bg-brand-500/20 px-1 py-0.5 rounded text-brand-300 font-semibold">{shortCode || 'CODE'}/Output</code>.
               </div>
             </div>
           )}
 
-          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end space-x-3">
+          <div className="pt-3 border-t border-slate-200 dark:border-white/[0.08] flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+              className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] rounded-xl transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition disabled:opacity-50 flex items-center space-x-2"
+              className="px-5 py-2.5 text-sm font-semibold text-slate-950 bg-brand-500 hover:bg-brand-400 rounded-xl shadow-glow-orange transition-all hover:-translate-y-0.5 disabled:opacity-50 flex items-center space-x-2"
             >
               {loading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
                   <span>Saving...</span>
                 </>
               ) : (

@@ -244,15 +244,15 @@ export const StockView: React.FC = () => {
           <button
             onClick={() => fetchProducts()}
             disabled={refreshing}
-            className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition"
+            className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] rounded-xl transition"
             title="Refresh Stock Data"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-brand-500' : ''}`} />
           </button>
 
           <button
             onClick={exportToCsv}
-            className="px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center space-x-1.5 transition"
+            className="px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] rounded-xl flex items-center space-x-1.5 transition"
             title="Export CSV"
           >
             <Download className="w-4 h-4" />
@@ -262,7 +262,7 @@ export const StockView: React.FC = () => {
           {canManageCatalog && (
             <button
               onClick={() => setIsCreateOpen(true)}
-              className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm flex items-center space-x-2 transition"
+              className="px-4 py-2 text-sm font-semibold text-slate-950 bg-brand-500 hover:bg-brand-400 rounded-xl shadow-glow-orange flex items-center space-x-2 transition-all hover:-translate-y-0.5"
             >
               <Plus className="w-4 h-4" />
               <span>New Product</span>
@@ -272,16 +272,16 @@ export const StockView: React.FC = () => {
       </div>
 
       {/* Filter Tabs & Search Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card space-y-4">
         {/* Status Pills */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-white/[0.06] pb-3">
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               onClick={() => setSelectedStatus('all')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition ${
                 selectedStatus === 'all'
-                  ? 'bg-slate-900 dark:bg-indigo-600 text-white shadow-xs'
-                  : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  ? 'bg-brand-500 text-slate-950 font-bold shadow-glow-orange/30'
+                  : 'bg-slate-50 dark:bg-[#151515] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-transparent dark:border-white/[0.05]'
               }`}
             >
               All Items ({counts.all})
@@ -289,10 +289,10 @@ export const StockView: React.FC = () => {
 
             <button
               onClick={() => setSelectedStatus('in_stock')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl flex items-center space-x-1.5 transition ${
                 selectedStatus === 'in_stock'
                   ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50'
+                  : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200/50 dark:border-emerald-800/40'
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -301,10 +301,10 @@ export const StockView: React.FC = () => {
 
             <button
               onClick={() => setSelectedStatus('low_stock')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl flex items-center space-x-1.5 transition ${
                 selectedStatus === 'low_stock'
                   ? 'bg-amber-500 text-white shadow-xs'
-                  : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50'
+                  : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200/50 dark:border-amber-800/40'
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-amber-400"></span>
@@ -313,10 +313,10 @@ export const StockView: React.FC = () => {
 
             <button
               onClick={() => setSelectedStatus('out_of_stock')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl flex items-center space-x-1.5 transition ${
                 selectedStatus === 'out_of_stock'
                   ? 'bg-rose-600 text-white shadow-xs'
-                  : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50'
+                  : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200/50 dark:border-rose-800/40'
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-rose-400"></span>
@@ -325,12 +325,12 @@ export const StockView: React.FC = () => {
           </div>
 
           {/* View Mode Toggle (List vs Kanban Grid) */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center bg-slate-100 dark:bg-[#151515] p-1 rounded-xl border border-slate-200 dark:border-white/[0.08]">
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-md text-xs font-medium transition ${
+              className={`p-1.5 rounded-lg text-xs font-medium transition ${
                 viewMode === 'list'
-                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                  ? 'bg-white dark:bg-white/[0.12] text-slate-900 dark:text-white shadow-xs'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
               title="Table List View"
@@ -339,9 +339,9 @@ export const StockView: React.FC = () => {
             </button>
             <button
               onClick={() => setViewMode('kanban')}
-              className={`p-1.5 rounded-md text-xs font-medium transition ${
+              className={`p-1.5 rounded-lg text-xs font-medium transition ${
                 viewMode === 'kanban'
-                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                  ? 'bg-white dark:bg-white/[0.12] text-slate-900 dark:text-white shadow-xs'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
               title="Kanban Cards View"
@@ -394,27 +394,27 @@ export const StockView: React.FC = () => {
 
       {/* Main Stock Content */}
       {loading ? (
-        <div className="py-24 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center space-y-3 text-slate-500 dark:text-slate-400">
-          <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <div className="py-24 bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] flex flex-col items-center justify-center space-y-3 text-slate-500 dark:text-slate-400">
+          <div className="w-8 h-8 border-3 border-brand-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-sm font-medium">Loading inventory catalog and stock balances...</p>
         </div>
       ) : error ? (
-        <div className="p-6 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm flex items-start space-x-3">
+        <div className="p-6 bg-red-50 dark:bg-rose-950/40 border border-red-200 dark:border-rose-900/50 rounded-2xl text-red-700 dark:text-rose-300 text-sm flex items-start space-x-3">
           <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
           <div>
             <h4 className="font-semibold">Error Loading Stock</h4>
             <p className="mt-1">{error}</p>
             <button
               onClick={() => fetchProducts()}
-              className="mt-3 px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold hover:bg-red-700"
+              className="mt-3 px-3.5 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-semibold hover:bg-rose-700"
             >
               Retry
             </button>
           </div>
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="py-20 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-center p-6 space-y-4">
-          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mx-auto">
+        <div className="py-20 bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] text-center p-6 space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-[#151515] flex items-center justify-center text-slate-400 mx-auto">
             <Package className="w-6 h-6" />
           </div>
           <div>
@@ -426,7 +426,7 @@ export const StockView: React.FC = () => {
           {canManageCatalog && (
             <button
               onClick={() => setIsCreateOpen(true)}
-              className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg inline-flex items-center space-x-2"
+              className="px-4 py-2 text-xs font-semibold text-slate-950 bg-brand-500 hover:bg-brand-400 rounded-xl shadow-glow-orange inline-flex items-center space-x-2"
             >
               <Plus className="w-4 h-4" />
               <span>Add New Product</span>
@@ -435,10 +435,10 @@ export const StockView: React.FC = () => {
         </div>
       ) : viewMode === 'list' ? (
         /* ERP Table View (Matching wireframe) */
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-700 uppercase tracking-wider text-[11px]">
+              <thead className="bg-slate-50 dark:bg-[#151515] text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/[0.08] uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="py-3 px-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition" onClick={() => handleSort('name')}>
                     <div className="flex items-center space-x-1">
@@ -596,7 +596,7 @@ export const StockView: React.FC = () => {
                           <button
                             onClick={() => setAdjustingProduct(p)}
                             title="Quick Adjust Physical Count"
-                            className="p-1.5 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-lg transition"
+                            className="p-1.5 text-brand-500 dark:text-brand-400 hover:text-brand-400 dark:hover:text-brand-300 hover:bg-brand-500/10 rounded-lg transition"
                           >
                             <Scale className="w-4 h-4" />
                           </button>
@@ -605,7 +605,7 @@ export const StockView: React.FC = () => {
                           <button
                             onClick={() => setInspectingProductId(p.id)}
                             title="View Locations & History"
-                            className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+                            className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] rounded-lg transition"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -615,7 +615,7 @@ export const StockView: React.FC = () => {
                             <button
                               onClick={() => setEditingProduct(p)}
                               title="Edit Product"
-                              className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+                              className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] rounded-lg transition"
                             >
                               <Edit className="w-4 h-4" />
                             </button>
@@ -626,7 +626,7 @@ export const StockView: React.FC = () => {
                             <button
                               onClick={() => handleDeleteProduct(p)}
                               title="Delete Product"
-                              className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition"
+                              className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-rose-950/40 rounded-lg transition"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -646,7 +646,7 @@ export const StockView: React.FC = () => {
           {filteredProducts.map((p) => (
             <div
               key={p.id}
-              className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-4"
+              className="bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] hover:border-brand-500/30 p-5 shadow-card hover:shadow-elevated transition-all duration-200 hover:-translate-y-1 flex flex-col justify-between space-y-4"
             >
               <div>
                 <div className="flex items-start justify-between gap-3">

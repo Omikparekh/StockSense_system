@@ -322,10 +322,10 @@ export const WarehouseView: React.FC = () => {
           <button
             onClick={() => fetchWarehouses()}
             disabled={refreshing}
-            className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg transition"
+            className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] rounded-xl transition"
             title="Refresh Facilities & Inventory"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-indigo-600 dark:text-indigo-400' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-brand-500' : ''}`} />
           </button>
 
           {canManageLocations && (
@@ -334,7 +334,7 @@ export const WarehouseView: React.FC = () => {
                 setLocationTargetWarehouseId(warehouses[0]?.id);
                 setIsLocationModalOpen(true);
               }}
-              className="px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-lg shadow-xs flex items-center space-x-1.5 transition"
+              className="px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#151515] hover:bg-slate-50 dark:hover:bg-white/[0.06] border border-slate-300 dark:border-white/[0.08] rounded-xl shadow-card flex items-center space-x-1.5 transition"
             >
               <MapPin className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
               <span>Add Location Bin</span>
@@ -347,7 +347,7 @@ export const WarehouseView: React.FC = () => {
                 setEditingWarehouse(null);
                 setIsWarehouseModalOpen(true);
               }}
-              className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm flex items-center space-x-1.5 transition"
+              className="px-4 py-2 text-xs font-semibold text-slate-950 bg-brand-500 hover:bg-brand-400 rounded-xl shadow-glow-orange flex items-center space-x-1.5 transition-all hover:-translate-y-0.5"
             >
               <Plus className="w-4 h-4" />
               <span>New Warehouse</span>
@@ -358,8 +358,8 @@ export const WarehouseView: React.FC = () => {
 
       {/* KPI Overview Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+        <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500 shrink-0">
             <WarehouseIcon className="w-5 h-5" />
           </div>
           <div>
@@ -370,8 +370,8 @@ export const WarehouseView: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+        <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-800/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
             <MapPin className="w-5 h-5" />
           </div>
           <div>
@@ -382,8 +382,8 @@ export const WarehouseView: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+        <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-800/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
             <Boxes className="w-5 h-5" />
           </div>
           <div>
@@ -394,8 +394,8 @@ export const WarehouseView: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+        <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-800/40 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
             <IndianRupee className="w-5 h-5" />
           </div>
           <div>
@@ -459,18 +459,18 @@ export const WarehouseView: React.FC = () => {
             return (
               <div
                 key={wh.id}
-                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden"
+                className="bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card overflow-hidden"
               >
                 {/* Facility Header */}
-                <div className="p-5 bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="p-5 bg-slate-50/80 dark:bg-[#151515] border-b border-slate-200 dark:border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-start space-x-3.5">
-                    <div className="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-mono font-bold text-sm shrink-0 shadow-xs">
+                    <div className="w-11 h-11 rounded-xl bg-brand-500 text-slate-950 flex items-center justify-center font-mono font-bold text-sm shrink-0 shadow-glow-orange">
                       {wh.short_code}
                     </div>
                     <div>
                       <div className="flex items-center space-x-2">
                         <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{wh.name}</h2>
-                        <span className="font-mono text-xs px-2 py-0.5 rounded bg-slate-200/80 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold">
+                        <span className="font-mono text-xs px-2 py-0.5 rounded bg-slate-200/80 dark:bg-white/[0.08] text-slate-800 dark:text-slate-200 font-semibold">
                           {wh.short_code}
                         </span>
                       </div>
@@ -486,7 +486,7 @@ export const WarehouseView: React.FC = () => {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3">
-                    <div className="text-right sm:border-r sm:border-slate-200 dark:sm:border-slate-700 sm:pr-4">
+                    <div className="text-right sm:border-r sm:border-slate-200 dark:sm:border-white/[0.08] sm:pr-4">
                       <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase">
                         Total Stock
                       </span>
@@ -495,11 +495,11 @@ export const WarehouseView: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="text-right sm:border-r sm:border-slate-200 dark:sm:border-slate-700 sm:pr-4">
+                    <div className="text-right sm:border-r sm:border-slate-200 dark:sm:border-white/[0.08] sm:pr-4">
                       <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase">
                         Facility Valuation
                       </span>
-                      <span className="text-base font-bold text-indigo-600 dark:text-indigo-400 font-mono">
+                      <span className="text-base font-bold text-brand-500 dark:text-brand-400 font-mono">
                         ₹{(wh.total_valuation || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
@@ -510,7 +510,7 @@ export const WarehouseView: React.FC = () => {
                           setLocationTargetWarehouseId(wh.id);
                           setIsLocationModalOpen(true);
                         }}
-                        className="px-3 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800 rounded-lg flex items-center space-x-1.5 transition"
+                        className="px-3.5 py-1.5 text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 rounded-xl flex items-center space-x-1.5 transition"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add Bin</span>
@@ -523,7 +523,7 @@ export const WarehouseView: React.FC = () => {
                           setEditingWarehouse(wh);
                           setIsWarehouseModalOpen(true);
                         }}
-                        className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition"
+                        className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-white/[0.06] rounded-xl transition"
                         title="Edit Warehouse Facility"
                       >
                         <Edit2 className="w-4 h-4" />
@@ -533,19 +533,19 @@ export const WarehouseView: React.FC = () => {
                 </div>
 
                 {/* Sub-section Navigation Tabs */}
-                <div className="px-5 pt-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-900 flex items-center justify-between">
+                <div className="px-5 pt-3 border-b border-slate-200 dark:border-white/[0.08] bg-slate-50/40 dark:bg-[#101010] flex items-center justify-between">
                   <div className="flex space-x-4">
                     <button
                       onClick={() => setWarehouseTabs((prev) => ({ ...prev, [wh.id]: 'products' }))}
                       className={`pb-2.5 text-xs font-bold border-b-2 flex items-center space-x-2 transition ${
                         currentTab === 'products'
-                          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                          ? 'border-brand-500 text-brand-500 dark:text-brand-400 dark:border-brand-400'
                           : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                       }`}
                     >
                       <Package className="w-4 h-4" />
                       <span>Warehouse Products</span>
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-white/[0.08] text-slate-700 dark:text-slate-300 font-semibold">
                         {invItems.length}
                       </span>
                     </button>
@@ -554,13 +554,13 @@ export const WarehouseView: React.FC = () => {
                       onClick={() => setWarehouseTabs((prev) => ({ ...prev, [wh.id]: 'bins' }))}
                       className={`pb-2.5 text-xs font-bold border-b-2 flex items-center space-x-2 transition ${
                         currentTab === 'bins'
-                          ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                          ? 'border-brand-500 text-brand-500 dark:text-brand-400 dark:border-brand-400'
                           : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                       }`}
                     >
                       <MapPin className="w-4 h-4" />
                       <span>Storage Bins</span>
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-white/[0.08] text-slate-700 dark:text-slate-300 font-semibold">
                         {wh.locations.length}
                       </span>
                     </button>

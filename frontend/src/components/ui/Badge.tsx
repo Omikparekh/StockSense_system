@@ -12,7 +12,9 @@ export type BadgeVariant =
   | 'warning'
   | 'danger'
   | 'info'
-  | 'neutral';
+  | 'neutral'
+  | 'ai'
+  | 'accent';
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
@@ -27,62 +29,81 @@ export const Badge: React.FC<BadgeProps> = ({
   ...props
 }) => {
   const variantStyles: Record<BadgeVariant, { badge: string; dot: string }> = {
-    draft: {
-      badge: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
-      dot: 'bg-slate-400 dark:bg-slate-500',
-    },
-    waiting: {
-      badge: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60',
-      dot: 'bg-amber-500',
-    },
+    // Semantic Ready: Indigo / Tech Blue
     ready: {
-      badge: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800/60',
-      dot: 'bg-indigo-500',
+      badge: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/25',
+      dot: 'bg-indigo-400',
     },
+    // Semantic Waiting: Amber
+    waiting: {
+      badge: 'bg-amber-500/10 text-amber-400 border-amber-500/25',
+      dot: 'bg-amber-400',
+    },
+    // Semantic Done: Emerald
     done: {
-      badge: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60',
-      dot: 'bg-emerald-500',
+      badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25',
+      dot: 'bg-emerald-400',
     },
-    cancelled: {
-      badge: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/60',
-      dot: 'bg-rose-500',
-    },
+    // Semantic Success: Emerald
     success: {
-      badge: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60',
-      dot: 'bg-emerald-500',
+      badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25',
+      dot: 'bg-emerald-400',
     },
+    // Semantic Warning: Amber
     warning: {
-      badge: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60',
-      dot: 'bg-amber-500',
+      badge: 'bg-amber-500/10 text-amber-400 border-amber-500/25',
+      dot: 'bg-amber-400',
     },
+    // Semantic Danger: Rose
     danger: {
-      badge: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/60',
-      dot: 'bg-rose-500',
+      badge: 'bg-rose-500/10 text-rose-400 border-rose-500/25',
+      dot: 'bg-rose-400',
     },
+    // Semantic Cancelled: Rose
+    cancelled: {
+      badge: 'bg-rose-500/10 text-rose-400 border-rose-500/25',
+      dot: 'bg-rose-400',
+    },
+    // Semantic Info: Sky
     info: {
-      badge: 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800/60',
-      dot: 'bg-sky-500',
+      badge: 'bg-sky-500/10 text-sky-400 border-sky-500/25',
+      dot: 'bg-sky-400',
     },
+    // Neutral: Charcoal / Slate
     neutral: {
-      badge: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
-      dot: 'bg-slate-400 dark:bg-slate-500',
+      badge: 'bg-white/[0.04] text-[#A5A5A5] border-white/[0.08]',
+      dot: 'bg-[#707070]',
+    },
+    // Draft: Low Contrast
+    draft: {
+      badge: 'bg-white/[0.04] text-[#A5A5A5] border-white/[0.08]',
+      dot: 'bg-[#707070]',
+    },
+    // AI / Accent: Controlled Orange
+    ai: {
+      badge: 'bg-[#FF5A1F]/15 text-[#FF8A4C] border-[#FF5A1F]/30 shadow-[0_0_12px_rgba(255,90,31,0.15)]',
+      dot: 'bg-[#FF5A1F] animate-pulse',
+    },
+    accent: {
+      badge: 'bg-[#FF5A1F]/15 text-[#FF8A4C] border-[#FF5A1F]/30',
+      dot: 'bg-[#FF5A1F]',
     },
   };
 
-  const current = variantStyles[variant];
+  const current = variantStyles[variant] || variantStyles.neutral;
 
   return (
     <span
       className={twMerge(
         clsx(
-          'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border select-none',
+          'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border select-none transition-colors duration-150',
           current.badge,
           className
         )
       )}
       {...props}
     >
-      {dot && <span className={clsx('w-1.5 h-1.5 rounded-full', current.dot)} />}
+      {dot && <span className={clsx('w-1.5 h-1.5 rounded-full shrink-0', current.dot)} />}
       {children}
     </span>
   );

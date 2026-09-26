@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { NavigationProvider, useNavigation } from './context/NavigationContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ThemeToggle } from './components/ui/ThemeToggle';
+import { AIConstellationBackground } from './components/ui/AIConstellationBackground';
 import { LoginCard } from './components/auth/LoginCard';
 import { SignupCard } from './components/auth/SignupCard';
 import { OtpVerificationModal } from './components/auth/OtpVerificationModal';
@@ -61,8 +62,15 @@ const AuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 transition-colors duration-200">
-      <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/50 via-slate-50 to-slate-50 dark:from-indigo-950/20 dark:via-slate-950 dark:to-slate-950 pointer-events-none" />
+    <div className="min-h-screen bg-slate-50 dark:bg-[#050505] flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 relative overflow-hidden transition-colors duration-300">
+      {/* Cinematic ambient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-100/60 via-slate-50 to-slate-50 dark:from-transparent dark:via-[#050505] dark:to-[#050505] pointer-events-none" />
+      <div className="ambient-glow-header pointer-events-none hidden dark:block" />
+      <div className="ambient-light-beam pointer-events-none hidden dark:block" />
+      <div className="tech-grid-overlay pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30 dark:opacity-35">
+        <AIConstellationBackground height="100%" interactive={false} />
+      </div>
 
       {/* Auth Screen Theme Toggle */}
       <div className="absolute top-4 right-4 z-20">

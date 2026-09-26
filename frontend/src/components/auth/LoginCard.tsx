@@ -43,10 +43,10 @@ export const LoginCard: React.FC<LoginCardProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-elevated p-8 sm:p-10 space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="w-full max-w-md bg-white dark:bg-[#101010] border border-slate-200 dark:border-white/[0.08] rounded-3xl shadow-elevated dark:shadow-glow-orange/5 p-8 sm:p-10 space-y-6 text-slate-900 dark:text-slate-100 transition-colors relative z-10 backdrop-blur-md">
       {/* Brand Icon & Heading matching wireframe */}
       <div className="text-center space-y-2">
-        <div className="inline-flex w-12 h-12 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 items-center justify-center text-white shadow-md shadow-brand-500/20 mb-1">
+        <div className="inline-flex w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-500 items-center justify-center text-slate-950 font-bold shadow-glow-orange mb-1">
           <Boxes className="w-6 h-6" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Sign in to StockSense</h1>
@@ -57,7 +57,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
 
       {/* Error alert */}
       {error && (
-        <div className="flex items-start gap-2.5 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-300 text-xs">
+        <div className="flex items-start gap-2.5 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-300 text-xs">
           <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -88,7 +88,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
             <button
               type="button"
               onClick={onOpenForgotPassword}
-              className="text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline transition-colors"
+              className="text-xs font-medium text-brand-500 dark:text-brand-400 hover:text-brand-400 dark:hover:text-brand-300 hover:underline transition-colors"
             >
               Forgot password?
             </button>
@@ -101,9 +101,9 @@ export const LoginCard: React.FC<LoginCardProps> = ({
       </form>
 
       {/* Demo Credentials Helper for Multi-laptop reviewers */}
-      <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs space-y-2">
+      <div className="bg-slate-50 dark:bg-[#151515] border border-slate-200 dark:border-white/[0.08] rounded-2xl p-3.5 text-xs space-y-2">
         <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-semibold">
-          <KeyRound className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
+          <KeyRound className="w-3.5 h-3.5 text-brand-500 dark:text-brand-400" />
           <span>Instant Evaluator Credentials</span>
         </div>
         <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
@@ -111,7 +111,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
           <button
             type="button"
             onClick={() => handleQuickDemoLogin('admin', 'AdminPassword123!')}
-            className="text-[11px] font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 uppercase tracking-wider"
+            className="text-[11px] font-semibold text-brand-500 dark:text-brand-400 hover:text-brand-400 dark:hover:text-brand-300 uppercase tracking-wider"
           >
             Auto-fill
           </button>
@@ -119,13 +119,13 @@ export const LoginCard: React.FC<LoginCardProps> = ({
       </div>
 
       {/* Switch to Signup */}
-      <div className="text-center pt-2 border-t border-slate-100 dark:border-slate-800">
+      <div className="text-center pt-2 border-t border-slate-100 dark:border-white/[0.06]">
         <p className="text-xs text-slate-600 dark:text-slate-400">
           Don't have an account?{' '}
           <button
             type="button"
             onClick={onSwitchToSignup}
-            className="font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline"
+            className="font-semibold text-brand-500 dark:text-brand-400 hover:text-brand-400 dark:hover:text-brand-300 hover:underline"
           >
             Sign up
           </button>

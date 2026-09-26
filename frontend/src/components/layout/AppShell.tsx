@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigation, AppView } from '../../context/NavigationContext';
+import { AnnouncementBar } from './AnnouncementBar';
 import { TopNav } from './TopNav';
 import { MobileNav } from './MobileNav';
 import { CommandPalette } from './CommandPalette';
 import { NotificationDrawer } from './NotificationDrawer';
 import { ProfileModal } from './ProfileModal';
+import { AIConstellationBackground } from '../ui/AIConstellationBackground';
 import { ChevronRight } from 'lucide-react';
 
 interface AppShellProps {
@@ -34,9 +36,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       case 'stock-history':
         return [{ label: 'Inventory', view: 'dashboard' }, { label: 'Stock Move History' }];
       case 'warehouses':
-        return [{ label: 'Settings', view: 'dashboard' }, { label: 'Warehouses' }];
+        return [{ label: 'Facilities', view: 'dashboard' }, { label: 'Warehouses & Products' }];
       case 'locations':
-        return [{ label: 'Settings', view: 'dashboard' }, { label: 'Locations' }];
+        return [{ label: 'Facilities', view: 'dashboard' }, { label: 'Storage Bins' }];
       default:
         return [{ label: 'Dashboard' }];
     }
@@ -45,35 +47,49 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const breadcrumbs = getBreadcrumbs();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-brand-500 selection:text-white transition-colors duration-200">
+    <div className="relative min-h-screen bg-[#FAFAF8] dark:bg-[#050505] text-[#111111] dark:text-[#F5F5F5] flex flex-col font-sans selection:bg-[#FF5A1F] selection:text-white transition-colors duration-300 overflow-x-hidden">
+      {/* Cinematic Ambient Atmosphere Lighting */}
+      <div className="ambient-glow-header" />
+      <div className="ambient-light-beam" />
+      {/* Ambient Constellation Network Backdrop */}
+      <div className="fixed top-0 right-0 w-full max-w-5xl h-96 pointer-events-none z-0 opacity-20 dark:opacity-25 overflow-hidden">
+        <AIConstellationBackground height="100%" interactive={false} />
+      </div>
+
+      {/* Top Announcement Bar */}
+      <AnnouncementBar onLearnMore={() => setCurrentView('dashboard')} />
+
       {/* Top Application Header */}
       <TopNav onToggleMobileMenu={() => setMobileMenuOpen(true)} />
 
-      {/* Sub-header Breadcrumb Bar */}
-      <div className="bg-white dark:bg-slate-900/90 border-b border-slate-200/80 dark:border-slate-800 py-2 px-4 sm:px-6 lg:px-8 shadow-2xs transition-colors duration-200">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <nav className="flex items-center space-x-1.5 text-xs text-slate-500 dark:text-slate-400">
-            {breadcrumbs.map((crumb, idx) => (
-              <React.Fragment key={crumb.label}>
-                {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />}
-                {crumb.view ? (
-                  <button
-                    onClick={() => setCurrentView(crumb.view!)}
-                    className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors font-medium"
-                  >
-                    {crumb.label}
-                  </button>
-                ) : (
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{crumb.label}</span>
-                )}
-              </React.Fragment>
-            ))}
-          </nav>
+      {/* Sub-header Breadcrumb Bar (rendered for deep subviews, keeping dashboard spacious and clean) */}
+      {currentView !== 'dashboard' && (
+        <div className="relative z-10 bg-white/60 dark:bg-[#070707]/60 backdrop-blur-md border-b border-black/[0.04] dark:border-white/[0.06] py-2.5 px-4 sm:px-6 lg:px-8 shadow-2xs transition-colors duration-200">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <nav className="flex items-center space-x-2 text-xs text-[#666666] dark:text-[#A5A5A5]">
+              {breadcrumbs.map((crumb, idx) => (
+                <React.Fragment key={crumb.label}>
+                  {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-[#505050]" />}
+                  {crumb.view ? (
+                    <button
+                      onClick={() => setCurrentView(crumb.view!)}
+                      className="hover:text-[#FF5A1F] dark:hover:text-[#FF8A4C] transition-colors font-medium"
+                    >
+                      {crumb.label}
+                    </button>
+                  ) : (
+                    <span className="font-semibold text-slate-900 dark:text-[#F5F5F5]">{crumb.label}</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
+
 
       {/* Page Content Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in">
         {children}
       </main>
 

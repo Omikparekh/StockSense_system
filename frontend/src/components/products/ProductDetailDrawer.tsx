@@ -57,20 +57,20 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
   const movements = data?.recentMovements || [];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/50 backdrop-blur-sm flex justify-end">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/60 backdrop-blur-sm flex justify-end">
       <div 
-        className="w-full max-w-2xl bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-800 animate-in slide-in-from-right duration-200"
+        className="w-full max-w-2xl bg-white dark:bg-[#101010] h-full shadow-2xl flex flex-col border-l border-slate-200 dark:border-white/[0.08] animate-in slide-in-from-right duration-200"
         role="dialog"
       >
         {/* Drawer Header */}
-        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-[#151515] border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+            <div className="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500">
               <Package className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-200/80 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-200/80 dark:bg-white/[0.08] text-slate-800 dark:text-slate-200">
                   {product?.sku || 'SKU'}
                 </span>
                 <span className="text-xs text-slate-500 dark:text-slate-400">•</span>
@@ -85,7 +85,7 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
             {product && (
               <button
                 onClick={() => onAdjust(product)}
-                className="px-3 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 rounded-lg flex items-center space-x-1.5 transition"
+                className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-brand-500 hover:bg-brand-400 rounded-xl shadow-glow-orange flex items-center space-x-1.5 transition-all hover:-translate-y-0.5"
               >
                 <Scale className="w-3.5 h-3.5" />
                 <span>Quick Adjust</span>
@@ -93,7 +93,7 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
             )}
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800 transition"
+              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-200/60 dark:hover:bg-white/[0.06] transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -145,7 +145,7 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
 
               {/* Metric KPI Cards */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <div className="p-3.5 bg-slate-50 dark:bg-[#151515] border border-slate-200 dark:border-white/[0.08] rounded-2xl">
                   <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Total On Hand
                   </span>
@@ -155,7 +155,7 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <div className="p-3.5 bg-slate-50 dark:bg-[#151515] border border-slate-200 dark:border-white/[0.08] rounded-2xl">
                   <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Free to Use
                   </span>
@@ -165,7 +165,7 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <div className="p-3.5 bg-slate-50 dark:bg-[#151515] border border-slate-200 dark:border-white/[0.08] rounded-2xl">
                   <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Reserved
                   </span>
@@ -175,7 +175,7 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <div className="p-3.5 bg-slate-50 dark:bg-[#151515] border border-slate-200 dark:border-white/[0.08] rounded-2xl">
                   <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Reorder Threshold
                   </span>
@@ -185,7 +185,7 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <div className="p-3.5 bg-slate-50 dark:bg-[#151515] border border-slate-200 dark:border-white/[0.08] rounded-2xl">
                   <div className="flex items-center justify-between">
                     <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       Unit Cost
@@ -206,7 +206,7 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50 rounded-xl">
+                <div className="p-3.5 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50 rounded-2xl">
                   <span className="block text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
                     Total Valuation
                   </span>

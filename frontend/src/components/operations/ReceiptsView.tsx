@@ -161,15 +161,15 @@ export const ReceiptsView: React.FC = () => {
           <button
             onClick={() => fetchReceipts()}
             disabled={refreshing}
-            className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition"
+            className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] rounded-xl transition"
             title="Refresh Receipts"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-brand-500' : ''}`} />
           </button>
 
           <button
             onClick={() => setIsFormOpen(true)}
-            className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm flex items-center space-x-2 transition"
+            className="px-4 py-2 text-sm font-semibold text-slate-950 bg-brand-500 hover:bg-brand-400 rounded-xl shadow-glow-orange flex items-center space-x-2 transition-all hover:-translate-y-0.5"
           >
             <Plus className="w-4 h-4" />
             <span>New Receipt</span>
@@ -178,15 +178,15 @@ export const ReceiptsView: React.FC = () => {
       </div>
 
       {/* Filter Tabs & Search Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-white/[0.06] pb-3">
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               onClick={() => setSelectedStatus('all')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition ${
                 selectedStatus === 'all'
-                  ? 'bg-slate-900 dark:bg-indigo-600 text-white shadow-xs'
-                  : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  ? 'bg-brand-500 text-slate-950 font-bold shadow-glow-orange/30'
+                  : 'bg-slate-50 dark:bg-[#151515] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-transparent dark:border-white/[0.05]'
               }`}
             >
               All Receipts ({counts.all})
@@ -194,10 +194,10 @@ export const ReceiptsView: React.FC = () => {
 
             <button
               onClick={() => setSelectedStatus('draft')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl flex items-center space-x-1.5 transition ${
                 selectedStatus === 'draft'
                   ? 'bg-slate-700 dark:bg-slate-700 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700'
+                  : 'bg-slate-100 dark:bg-[#151515] text-slate-700 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-white/[0.06] border border-slate-200/60 dark:border-white/[0.05]'
               }`}
             >
               <span>Draft ({counts.draft})</span>
@@ -205,10 +205,10 @@ export const ReceiptsView: React.FC = () => {
 
             <button
               onClick={() => setSelectedStatus('ready')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl flex items-center space-x-1.5 transition ${
                 selectedStatus === 'ready'
                   ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50'
+                  : 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200/50 dark:border-blue-800/40'
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-blue-400"></span>
@@ -268,22 +268,22 @@ export const ReceiptsView: React.FC = () => {
 
       {/* Main Content */}
       {loading ? (
-        <div className="py-24 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center space-y-3 text-slate-500 dark:text-slate-400">
-          <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <div className="py-24 bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] flex flex-col items-center justify-center space-y-3 text-slate-500 dark:text-slate-400">
+          <div className="w-8 h-8 border-3 border-brand-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-sm font-medium">Loading inbound receipts...</p>
         </div>
       ) : error ? (
-        <div className="p-6 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm">
+        <div className="p-6 bg-red-50 dark:bg-rose-950/40 border border-red-200 dark:border-rose-900/50 rounded-2xl text-red-700 dark:text-rose-300 text-sm">
           {error}
         </div>
       ) : filteredReceipts.length === 0 ? (
-        <div className="py-16 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-center p-6 space-y-3">
+        <div className="py-16 bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] text-center p-6 space-y-3">
           <PackagePlus className="w-10 h-10 text-slate-400 mx-auto" />
           <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">No receipts found</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">Create a new receipt to record incoming supplier goods.</p>
           <button
             onClick={() => setIsFormOpen(true)}
-            className="mt-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg inline-flex items-center space-x-1.5"
+            className="mt-2 px-4 py-2 text-xs font-semibold text-slate-950 bg-brand-500 hover:bg-brand-400 rounded-xl shadow-glow-orange inline-flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Create Inbound Receipt</span>
@@ -291,10 +291,10 @@ export const ReceiptsView: React.FC = () => {
         </div>
       ) : viewMode === 'list' ? (
         /* ERP Table View */
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-[#101010] rounded-2xl border border-slate-200 dark:border-white/[0.08] shadow-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-700 uppercase tracking-wider text-[11px]">
+              <thead className="bg-slate-50 dark:bg-[#151515] text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-white/[0.08] uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="py-3 px-4">Reference</th>
                   <th className="py-3 px-4">Vendor / From</th>

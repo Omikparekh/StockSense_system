@@ -210,11 +210,11 @@ export const CommandPalette: React.FC = () => {
   if (!isCommandPaletteOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-elevated overflow-hidden transition-colors">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
+      <div className="w-full max-w-xl bg-white dark:bg-[#121212] border border-slate-200 dark:border-white/[0.08] rounded-3xl shadow-2xl overflow-hidden transition-colors">
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-200 dark:border-slate-800">
-          <Search className="w-5 h-5 text-slate-400" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-200 dark:border-white/[0.08]">
+          <Search className="w-5 h-5 text-slate-400 dark:text-[#707070]" />
           <input
             ref={inputRef}
             type="text"
@@ -225,11 +225,11 @@ export const CommandPalette: React.FC = () => {
               setSelectedIndex(0);
             }}
             onKeyDown={handleKeyDown}
-            className="w-full text-sm bg-transparent text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
+            className="w-full text-sm bg-transparent text-slate-900 dark:text-[#F5F5F5] placeholder:text-slate-400 dark:placeholder:text-[#505050] focus:outline-none"
           />
           <button
             onClick={() => setIsCommandPaletteOpen(false)}
-            className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -238,7 +238,7 @@ export const CommandPalette: React.FC = () => {
         {/* Results List */}
         <div className="max-h-80 overflow-y-auto p-2 space-y-1">
           {filteredItems.length === 0 ? (
-            <div className="py-8 text-center text-xs text-slate-500 dark:text-slate-400">
+            <div className="py-8 text-center text-xs text-slate-500 dark:text-[#707070]">
               No operations or destinations found matching "{query}"
             </div>
           ) : (
@@ -246,22 +246,22 @@ export const CommandPalette: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => handleSelect(item)}
-                className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-colors ${
+                className={`w-full flex items-center justify-between p-2.5 rounded-2xl text-left transition-colors ${
                   idx === selectedIndex
-                    ? 'bg-brand-50/80 dark:bg-brand-950/60 text-brand-900 dark:text-brand-200'
-                    : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                    ? 'bg-brand-500/10 text-brand-500 border border-brand-500/20'
+                    : 'hover:bg-slate-50 dark:hover:bg-white/[0.04] text-slate-700 dark:text-[#A5A5A5] border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-subtle">
+                  <div className="p-2 rounded-xl bg-white dark:bg-[#181818] border border-slate-200/80 dark:border-white/[0.08] shadow-subtle">
                     {item.icon}
                   </div>
                   <div>
-                    <div className="font-semibold text-xs text-slate-900 dark:text-slate-100">{item.title}</div>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400">{item.subtitle}</div>
+                    <div className="font-semibold text-xs text-slate-900 dark:text-[#F5F5F5]">{item.title}</div>
+                    <div className="text-[11px] text-slate-500 dark:text-[#707070]">{item.subtitle}</div>
                   </div>
                 </div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-[#707070] px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-white/[0.05]">
                   {item.category}
                 </span>
               </button>
@@ -270,13 +270,13 @@ export const CommandPalette: React.FC = () => {
         </div>
 
         {/* Footer shortcuts */}
-        <div className="flex items-center justify-between px-4 py-2.5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+        <div className="flex items-center justify-between px-4 py-2.5 bg-slate-50 dark:bg-[#151515] border-t border-slate-200 dark:border-white/[0.08] text-[11px] text-slate-500 dark:text-[#707070]">
           <div className="flex items-center gap-2">
-            <span><kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded shadow-xs font-mono">↑</kbd> <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded shadow-xs font-mono">↓</kbd> Navigate</span>
-            <span><kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded shadow-xs font-mono">↵</kbd> Select</span>
+            <span><kbd className="px-1.5 py-0.5 bg-white dark:bg-[#0A0A0A] border border-slate-300 dark:border-white/[0.1] rounded-md shadow-xs font-mono">↑</kbd> <kbd className="px-1.5 py-0.5 bg-white dark:bg-[#0A0A0A] border border-slate-300 dark:border-white/[0.1] rounded-md shadow-xs font-mono">↓</kbd> Navigate</span>
+            <span><kbd className="px-1.5 py-0.5 bg-white dark:bg-[#0A0A0A] border border-slate-300 dark:border-white/[0.1] rounded-md shadow-xs font-mono">↵</kbd> Select</span>
           </div>
           <div>
-            <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded shadow-xs font-mono">ESC</kbd> Close
+            <kbd className="px-1.5 py-0.5 bg-white dark:bg-[#0A0A0A] border border-slate-300 dark:border-white/[0.1] rounded-md shadow-xs font-mono">ESC</kbd> Close
           </div>
         </div>
       </div>
