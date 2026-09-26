@@ -21,21 +21,23 @@ import {
   ArrowRight,
   AlertTriangle,
   ArrowUpRight,
+  IndianRupee
 } from 'lucide-react';
 
 export const DashboardView: React.FC = () => {
   const { user } = useAuth();
-  const { setCurrentView } = useNavigation();
+  const { setCurrentView, activeWarehouse } = useNavigation();
 
   const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadDashboard = async () => {
+  const loadDashboard = async (isSilent = false) => {
     try {
-      setLoading(true);
+      if (!isSilent) setLoading(true);
       setError(null);
-      const res = await dashboardService.fetchDashboardKPIs();
+      const warehouseId = activeWarehouse?.id !== 0 ? activeWarehouse?.id : null;
+      const res = await dashboardService.fetchDashboardKPIs(warehouseId);
       if (res.success) {
         setKpis(res.data);
       }
@@ -48,7 +50,26 @@ export const DashboardView: React.FC = () => {
 
   useEffect(() => {
     loadDashboard();
-  }, []);
+  }, [activeWarehouse?.id]);
+
+  // Rapid sync: auto-refresh every 12 seconds and on tab visibility change
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadDashboard(true);
+    }, 12000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        loadDashboard(true);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [activeWarehouse?.id]);
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return 'N/A';
@@ -70,15 +91,22 @@ export const DashboardView: React.FC = () => {
       {/* Welcome Banner */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-colors">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Authenticated Session Active</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Authenticated Session Active</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">
+              <span>Facility: {activeWarehouse?.id === 0 ? 'All Facilities' : `${activeWarehouse?.name} (${activeWarehouse?.shortCode})`}</span>
+            </div>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Good morning, {user?.name}
           </h1>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Here is your live operations overview across warehouse facilities.
+            {activeWarehouse?.id === 0
+              ? 'Aggregated live operations and inventory analytics across all warehouse facilities.'
+              : `Live operations overview filtered specifically for ${activeWarehouse?.name} (${activeWarehouse?.shortCode}).`}
           </p>
         </div>
 
@@ -86,7 +114,7 @@ export const DashboardView: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={loadDashboard}
+            onClick={() => loadDashboard()}
             disabled={loading}
             className="text-xs"
           >
@@ -235,7 +263,7 @@ export const DashboardView: React.FC = () => {
       </div>
 
       {/* Inventory Health Counters */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
         <Card className="p-4 space-y-1">
           <div className="flex items-center justify-between text-slate-400 dark:text-slate-500">
             <span className="text-xs font-semibold uppercase tracking-wider">Catalog Items</span>
@@ -255,7 +283,18 @@ export const DashboardView: React.FC = () => {
           <div className="text-2xl font-black text-slate-900 dark:text-white font-mono">
             {Number(kpis?.inventory.total_units || 0).toLocaleString()}
           </div>
-          <div className="text-[11px] text-slate-500 dark:text-slate-400">Total units across locations</div>
+          <div className="text-[11px] text-slate-500 dark:text-slate-400">Total units stored</div>
+        </Card>
+
+        <Card className="p-4 space-y-1">
+          <div className="flex items-center justify-between text-slate-400 dark:text-slate-500">
+            <span className="text-xs font-semibold uppercase tracking-wider">Inventory Value</span>
+            <IndianRupee className="w-4 h-4 text-indigo-500" />
+          </div>
+          <div className="text-2xl font-black text-indigo-600 dark:text-indigo-400 font-mono">
+            ₹{Number(kpis?.inventory.total_valuation || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
+          <div className="text-[11px] text-slate-500 dark:text-slate-400">Calculated valuation</div>
         </Card>
 
         <div

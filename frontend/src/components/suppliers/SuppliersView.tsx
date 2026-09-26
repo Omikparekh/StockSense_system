@@ -17,7 +17,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Truck,
-  DollarSign
+  IndianRupee
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 
@@ -216,7 +216,7 @@ export const SuppliersView: React.FC = () => {
 
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center space-x-3">
           <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
-            <DollarSign className="w-5 h-5" />
+            <IndianRupee className="w-5 h-5" />
           </div>
           <div>
             <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">

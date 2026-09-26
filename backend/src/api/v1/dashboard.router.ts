@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { authMiddleware, AuthenticatedRequest } from '../../middleware/auth.js';
 import { asyncHandler } from '../../middleware/asyncHandler.js';
 import { db } from '../../config/database.js';
+import { getApproximateCost } from '../../core/costs.js';
 
 const dashboardRouter = Router();
 
@@ -120,27 +121,22 @@ dashboardRouter.get(
     }
 
     // 4. Inventory Health, Totals & Valuation
+    const sumExpr = warehouseId
+      ? `COALESCE(SUM(CASE WHEN loc.warehouse_id = ${warehouseId} THEN s.on_hand ELSE 0 END), 0)`
+      : `COALESCE(SUM(s.on_hand), 0)`;
+
     let productStatsQuery = `
       SELECT 
         p.id,
         p.reorder_level,
         p.category,
         COALESCE(p.unit_cost, 0) AS unit_cost,
-        COALESCE(SUM(s.on_hand), 0) AS total_on_hand
+        ${sumExpr} AS total_on_hand
       FROM products p
+      LEFT JOIN stock_levels s ON p.id = s.product_id
+      ${warehouseId ? 'LEFT JOIN locations loc ON s.location_id = loc.id' : ''}
+      GROUP BY p.id, p.reorder_level, p.category, p.unit_cost
     `;
-
-    if (warehouseId) {
-      productStatsQuery += `
-        LEFT JOIN locations loc ON loc.warehouse_id = ${warehouseId}
-        LEFT JOIN stock_levels s ON p.id = s.product_id AND s.location_id = loc.id
-      `;
-    } else {
-      productStatsQuery += `
-        LEFT JOIN stock_levels s ON p.id = s.product_id
-      `;
-    }
-    productStatsQuery += ` GROUP BY p.id, p.reorder_level, p.category, p.unit_cost`;
 
     const productStats = await db.query<any>(productStatsQuery);
 
@@ -155,7 +151,7 @@ dashboardRouter.get(
       const onHand = Number(p.total_on_hand) || 0;
       const reorderLevel = Number(p.reorder_level) || 0;
       const rawCost = Number(p.unit_cost);
-      const unitCost = rawCost > 0 ? rawCost : 25.0; // fallback approx
+      const unitCost = rawCost > 0 ? rawCost : getApproximateCost(p.category);
       totalUnits += onHand;
       totalValuation += onHand * unitCost;
 

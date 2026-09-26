@@ -40,6 +40,7 @@ export interface ProductWithStock extends Product {
   free_stock: number;
   stock_status: StockHealthStatus;
   total_value?: number;
+  is_approx_cost?: boolean;
 }
 
 export interface LocationStock {
@@ -108,6 +109,7 @@ export interface WarehouseInventoryItem {
   category: string;
   uom: string;
   unitCost: number;
+  isApproxCost?: boolean;
   imageUrl?: string | null;
   imageUrl2?: string | null;
   locationId: number;

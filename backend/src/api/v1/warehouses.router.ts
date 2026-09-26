@@ -5,6 +5,8 @@ import { asyncHandler } from '../../middleware/asyncHandler.js';
 import { authMiddleware, requireRole, AuthenticatedRequest } from '../../middleware/auth.js';
 import { AppError } from '../../middleware/errorHandler.js';
 
+import { getApproximateCost } from '../../core/costs.js';
+
 const warehousesRouter = Router();
 
 const createWarehouseSchema = z.object({
@@ -44,14 +46,29 @@ warehousesRouter.get(
         loc.path,
         loc.created_at,
         COALESCE(SUM(sl.on_hand), 0) AS total_on_hand,
-        COUNT(DISTINCT sl.product_id) AS distinct_products,
-        COALESCE(SUM(sl.on_hand * COALESCE(p.unit_cost, 0)), 0) AS total_valuation
+        COUNT(DISTINCT CASE WHEN sl.on_hand > 0 THEN sl.product_id ELSE NULL END) AS distinct_products
        FROM locations loc
        LEFT JOIN stock_levels sl ON sl.location_id = loc.id
-       LEFT JOIN products p ON sl.product_id = p.id
        GROUP BY loc.id, loc.warehouse_id, loc.name, loc.short_code, loc.path, loc.created_at
        ORDER BY loc.path ASC`
     );
+
+    // Compute valuation accurately based on actual unit_cost or category approx cost
+    const stockItems = await db.query<any>(
+      `SELECT sl.location_id, sl.on_hand, p.unit_cost, p.category
+       FROM stock_levels sl
+       JOIN products p ON sl.product_id = p.id
+       WHERE sl.on_hand > 0`
+    );
+
+    const locValuationMap = new Map<number, number>();
+    for (const item of stockItems) {
+      const onHand = Number(item.on_hand) || 0;
+      const rawCost = Number(item.unit_cost);
+      const cost = rawCost > 0 ? rawCost : getApproximateCost(item.category);
+      const locId = Number(item.location_id);
+      locValuationMap.set(locId, (locValuationMap.get(locId) || 0) + onHand * cost);
+    }
 
     const result = warehouses.map((wh) => {
       const whLocations = locations
@@ -64,7 +81,7 @@ warehousesRouter.get(
           path: l.path,
           total_on_hand: Number(l.total_on_hand) || 0,
           distinct_products: Number(l.distinct_products) || 0,
-          total_valuation: Math.round((Number(l.total_valuation) || 0) * 100) / 100,
+          total_valuation: Math.round((locValuationMap.get(Number(l.id)) || 0) * 100) / 100,
           created_at: l.created_at
         }));
 
@@ -127,7 +144,9 @@ warehousesRouter.get(
 
     const items = rows.map(r => {
       const onHand = Number(r.on_hand) || 0;
-      const unitCost = Number(r.unit_cost) || 25.0;
+      const rawCost = Number(r.unit_cost);
+      const hasActualCost = rawCost > 0;
+      const unitCost = hasActualCost ? rawCost : getApproximateCost(r.category);
       return {
         productId: Number(r.product_id),
         productName: r.product_name,
@@ -135,6 +154,7 @@ warehousesRouter.get(
         category: r.category,
         uom: r.uom,
         unitCost,
+        isApproxCost: !hasActualCost,
         imageUrl: r.image_url,
         imageUrl2: r.image_url_2,
         locationId: Number(r.location_id),

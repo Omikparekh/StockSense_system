@@ -8,7 +8,8 @@ import {
   History, 
   Scale, 
   AlertTriangle, 
-  CheckCircle2
+  CheckCircle2,
+  Image as ImageIcon
 } from 'lucide-react';
 
 interface ProductDetailDrawerProps {
@@ -112,24 +113,44 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
             </div>
           ) : product ? (
             <>
+              {/* Product Photos Section */}
+              {(product.image_url || product.image_url_2) && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <ImageIcon className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                      <span>Product Photos ({[product.image_url, product.image_url_2].filter(Boolean).length})</span>
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {product.image_url && (
+                      <div className="relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 h-44 flex items-center justify-center shadow-xs">
+                        <img src={product.image_url} alt={`${product.name} Primary`} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-slate-900/70 text-white text-[10px] font-semibold backdrop-blur-xs">
+                          Photo 1 (Primary)
+                        </div>
+                      </div>
+                    )}
+                    {product.image_url_2 && (
+                      <div className="relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 h-44 flex items-center justify-center shadow-xs">
+                        <img src={product.image_url_2} alt={`${product.name} Secondary`} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-slate-900/70 text-white text-[10px] font-semibold backdrop-blur-xs">
+                          Photo 2 (Secondary View)
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Metric KPI Cards */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
                   <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Total On Hand
                   </span>
                   <div className="flex items-baseline space-x-1 mt-1">
                     <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{product.on_hand}</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">{product.uom}</span>
-                  </div>
-                </div>
-
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
-                  <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Reserved
-                  </span>
-                  <div className="flex items-baseline space-x-1 mt-1">
-                    <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">{product.reserved}</span>
                     <span className="text-xs text-slate-500 dark:text-slate-400">{product.uom}</span>
                   </div>
                 </div>
@@ -146,11 +167,53 @@ export const ProductDetailDrawer: React.FC<ProductDetailDrawerProps> = ({
 
                 <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
                   <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Reorder Level
+                    Reserved
+                  </span>
+                  <div className="flex items-baseline space-x-1 mt-1">
+                    <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">{product.reserved}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">{product.uom}</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                  <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Reorder Threshold
                   </span>
                   <div className="flex items-baseline space-x-1 mt-1">
                     <span className="text-2xl font-bold text-slate-700 dark:text-slate-300">{product.reorder_level}</span>
                     <span className="text-xs text-slate-500 dark:text-slate-400">{product.uom}</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                  <div className="flex items-center justify-between">
+                    <span className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      Unit Cost
+                    </span>
+                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
+                      product.is_approx_cost 
+                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300' 
+                        : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
+                    }`}>
+                      {product.is_approx_cost ? 'Approx' : 'Actual'}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline space-x-1 mt-1">
+                    <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                      ₹{Number(product.unit_cost || 0).toFixed(2)}
+                    </span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">/{product.uom}</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/50 rounded-xl">
+                  <span className="block text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
+                    Total Valuation
+                  </span>
+                  <div className="flex items-baseline space-x-1 mt-1">
+                    <span className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">
+                      ₹{Number(product.total_value || (product.on_hand * product.unit_cost)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
                   </div>
                 </div>
               </div>

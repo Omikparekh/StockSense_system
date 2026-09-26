@@ -462,6 +462,13 @@ export const StockView: React.FC = () => {
                       <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
+                  <th className="py-3 px-3 text-right">Unit Cost</th>
+                  <th className="py-3 px-4 text-right cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition" onClick={() => handleSort('total_value')}>
+                    <div className="flex items-center justify-end space-x-1">
+                      <span>Valuation</span>
+                      <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </th>
                   <th className="py-3 px-4 text-center">Status</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
@@ -473,8 +480,17 @@ export const StockView: React.FC = () => {
                       {/* Product Name & SKU */}
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
-                            <Package className="w-4 h-4" />
+                          <div className="relative w-9 h-9 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 shadow-2xs">
+                            {p.image_url ? (
+                              <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <Package className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                            )}
+                            {p.image_url_2 && (
+                              <span className="absolute bottom-0 right-0 bg-indigo-600 text-white text-[8px] font-bold px-1 rounded-tl" title="Has 2 product photos">
+                                2
+                              </span>
+                            )}
                           </div>
                           <div>
                             <button
@@ -532,6 +548,25 @@ export const StockView: React.FC = () => {
                           {p.free_stock}
                         </span>
                         <span className="text-[10px] text-slate-400 ml-1">{p.uom}</span>
+                      </td>
+
+                      {/* Unit Cost */}
+                      <td className="py-3 px-3 text-right">
+                        <div className="font-mono font-bold text-slate-800 dark:text-slate-200">
+                          ₹{Number(p.unit_cost || 0).toFixed(2)}
+                        </div>
+                        <span className={`text-[9px] font-semibold px-1 py-0.2 rounded ${
+                          p.is_approx_cost 
+                            ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300' 
+                            : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
+                        }`}>
+                          {p.is_approx_cost ? 'Approx' : 'Actual'}
+                        </span>
+                      </td>
+
+                      {/* Total Valuation */}
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900 dark:text-slate-100">
+                        ₹{Number(p.total_value || (p.on_hand * (p.unit_cost || 0))).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
 
                       {/* Status Badge */}
@@ -614,16 +649,30 @@ export const StockView: React.FC = () => {
               className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-4"
             >
               <div>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                      {p.sku}
-                    </span>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mt-2 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer" onClick={() => setInspectingProductId(p.id)}>
-                      {p.name}
-                    </h3>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start space-x-3">
+                    <div className="relative w-11 h-11 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 shadow-2xs">
+                      {p.image_url ? (
+                        <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <Package className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                      )}
+                      {p.image_url_2 && (
+                        <span className="absolute bottom-0 right-0 bg-indigo-600 text-white text-[8px] font-bold px-1 rounded-tl" title="Has 2 product photos">
+                          2
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                        {p.sku}
+                      </span>
+                      <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mt-1 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer" onClick={() => setInspectingProductId(p.id)}>
+                        {p.name}
+                      </h3>
+                    </div>
                   </div>
-                  <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                  <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shrink-0">
                     {p.category}
                   </span>
                 </div>
@@ -652,7 +701,7 @@ export const StockView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-center">
                   <div className="p-2 bg-slate-50 dark:bg-slate-800/60 rounded-lg">
                     <span className="block text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Reserved</span>
                     <span className="text-sm font-bold text-amber-600 dark:text-amber-400">{p.reserved}</span>
@@ -660,6 +709,14 @@ export const StockView: React.FC = () => {
                   <div className="p-2 bg-slate-50 dark:bg-slate-800/60 rounded-lg">
                     <span className="block text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Free Stock</span>
                     <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{p.free_stock}</span>
+                  </div>
+                  <div className="p-2 bg-slate-50 dark:bg-slate-800/60 rounded-lg">
+                    <span className="block text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Unit Cost</span>
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">₹{Number(p.unit_cost || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="p-2 bg-slate-50 dark:bg-slate-800/60 rounded-lg">
+                    <span className="block text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold">Valuation</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-slate-100">₹{Number(p.total_value || (p.on_hand * (p.unit_cost || 0))).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                   </div>
                 </div>
               </div>

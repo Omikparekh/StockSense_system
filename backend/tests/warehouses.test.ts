@@ -125,4 +125,28 @@ describe('Warehouses & Storage Locations Endpoints', () => {
     expect(res.body.success).toBe(true);
     expect(res.body.message).toContain('deleted successfully');
   });
+
+  it('GET /api/v1/warehouses/:id/inventory should return stocked products with photos, unit costs, and valuations', async () => {
+    const res = await request(app).get('/api/v1/warehouses/1/inventory');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    if (res.body.data.length > 0) {
+      const item = res.body.data[0];
+      expect(item).toHaveProperty('productId');
+      expect(item).toHaveProperty('productName');
+      expect(item).toHaveProperty('sku');
+      expect(item).toHaveProperty('unitCost');
+      expect(typeof item.unitCost).toBe('number');
+      expect(item).toHaveProperty('isApproxCost');
+      expect(typeof item.isApproxCost).toBe('boolean');
+      expect(item).toHaveProperty('totalValuation');
+      expect(item).toHaveProperty('locationPath');
+      expect(item).toHaveProperty('onHand');
+      expect(item).toHaveProperty('imageUrl');
+      expect(item).toHaveProperty('imageUrl2');
+      expect(item.totalValuation).toBe(Math.round(item.onHand * item.unitCost * 100) / 100);
+    }
+  });
 });

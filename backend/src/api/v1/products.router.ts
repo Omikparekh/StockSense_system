@@ -9,22 +9,8 @@ import { ProductWithStock, LocationStock } from '../../types/index.js';
 
 const productsRouter = Router();
 
-export function getApproximateCost(category: string): number {
-  switch (category) {
-    case 'Machinery':
-      return 210.00;
-    case 'Furniture':
-      return 120.00;
-    case 'Raw Materials':
-      return 45.50;
-    case 'Hardware':
-      return 0.85;
-    case 'Packaging':
-      return 4.25;
-    default:
-      return 25.00;
-  }
-}
+export { getApproximateCost } from '../../core/costs.js';
+import { getApproximateCost } from '../../core/costs.js';
 
 const createProductSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(255),
@@ -74,7 +60,20 @@ productsRouter.get(
     const limit = Math.max(1, Math.min(100, Number(req.query.limit) || 50));
     const offset = (page - 1) * limit;
 
-    // Base query combining products with aggregated stock_levels
+    const params: any[] = [];
+    let paramIndex = 1;
+
+    let stockSumOnHand = 'COALESCE(SUM(sl.on_hand), 0)';
+    let stockSumReserved = 'COALESCE(SUM(sl.reserved), 0)';
+
+    if (warehouseId) {
+      stockSumOnHand = `COALESCE(SUM(CASE WHEN loc.warehouse_id = $${paramIndex} THEN sl.on_hand ELSE 0 END), 0)`;
+      stockSumReserved = `COALESCE(SUM(CASE WHEN loc.warehouse_id = $${paramIndex} THEN sl.reserved ELSE 0 END), 0)`;
+      params.push(warehouseId);
+      paramIndex++;
+    }
+
+    // Base query combining products with aggregated stock_levels without cross-joins
     let query = `
       SELECT 
         p.id,
@@ -88,16 +87,13 @@ productsRouter.get(
         p.image_url,
         p.image_url_2,
         p.created_at,
-        COALESCE(SUM(sl.on_hand), 0) AS on_hand,
-        COALESCE(SUM(sl.reserved), 0) AS reserved
+        ${stockSumOnHand} AS on_hand,
+        ${stockSumReserved} AS reserved
       FROM products p
-      LEFT JOIN locations loc ON 1=1 ${warehouseId ? 'AND loc.warehouse_id = ' + warehouseId : ''}
-      LEFT JOIN stock_levels sl ON sl.product_id = p.id AND sl.location_id = loc.id
+      LEFT JOIN stock_levels sl ON sl.product_id = p.id
+      LEFT JOIN locations loc ON sl.location_id = loc.id
       WHERE 1=1
     `;
-
-    const params: any[] = [];
-    let paramIndex = 1;
 
     if (search) {
       query += ` AND (LOWER(p.name) LIKE $${paramIndex} OR LOWER(p.sku) LIKE $${paramIndex})`;
@@ -125,7 +121,8 @@ productsRouter.get(
       const freeStock = Math.max(0, onHand - reserved);
       const reorderLevel = Number(r.reorder_level) || 0;
       const rawCost = Number(r.unit_cost);
-      const unitCost = rawCost > 0 ? rawCost : getApproximateCost(r.category);
+      const hasActualCost = rawCost > 0;
+      const unitCost = hasActualCost ? rawCost : getApproximateCost(r.category);
       const totalValue = Math.round(onHand * unitCost * 100) / 100;
 
       let stockStatus: 'in_stock' | 'low_stock' | 'out_of_stock' = 'in_stock';
@@ -144,6 +141,7 @@ productsRouter.get(
         per_unit_weight: Number(r.per_unit_weight) || 0,
         reorder_level: reorderLevel,
         unit_cost: unitCost,
+        is_approx_cost: !hasActualCost,
         image_url: r.image_url || null,
         image_url_2: r.image_url_2 || null,
         total_value: totalValue,
@@ -259,7 +257,8 @@ productsRouter.get(
 
     const reorderLevel = Number(product.reorder_level) || 0;
     const rawCost = Number(product.unit_cost);
-    const unitCost = rawCost > 0 ? rawCost : getApproximateCost(product.category);
+    const hasActualCost = rawCost > 0;
+    const unitCost = hasActualCost ? rawCost : getApproximateCost(product.category);
     const totalValue = Math.round(totalOnHand * unitCost * 100) / 100;
 
     let stockStatus: 'in_stock' | 'low_stock' | 'out_of_stock' = 'in_stock';
@@ -287,6 +286,7 @@ productsRouter.get(
           per_unit_weight: Number(product.per_unit_weight) || 0,
           reorder_level: reorderLevel,
           unit_cost: unitCost,
+          is_approx_cost: !hasActualCost,
           image_url: product.image_url || null,
           image_url_2: product.image_url_2 || null,
           total_value: totalValue,

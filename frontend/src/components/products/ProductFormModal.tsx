@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ProductWithStock } from '../../types';
 import { api, ApiError } from '../../services/api';
-import { X, PackagePlus, Edit3, AlertCircle, Upload, Image as ImageIcon, Trash2, Link as LinkIcon, DollarSign } from 'lucide-react';
+import { X, PackagePlus, Edit3, AlertCircle, Upload, Image as ImageIcon, Trash2, Link as LinkIcon, IndianRupee, ArrowLeftRight } from 'lucide-react';
 
 interface ProductFormModalProps {
   product: ProductWithStock | null; // null means create mode
@@ -37,8 +37,10 @@ export const getCategoryApproxCost = (cat: string) => {
     case 'Machinery': return 210.00;
     case 'Furniture': return 120.00;
     case 'Raw Materials': return 45.50;
-    case 'Hardware': return 0.85;
+    case 'Hardware': return 8.50;
     case 'Packaging': return 4.25;
+    case 'Electronics & Sensors':
+    case 'Electronics': return 85.00;
     default: return 25.00;
   }
 };
@@ -184,6 +186,13 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
     };
     reader.readAsDataURL(file);
     e.target.value = '';
+  };
+
+  const handleSwapPhotos = () => {
+    const temp1 = imageUrl;
+    const temp2 = imageUrl2;
+    setImageUrl(temp2);
+    setImageUrl2(temp1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -445,37 +454,57 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               </span>
             </div>
 
-            {/* Unit Cost ($) & Valuation */}
-            <div className="md:col-span-2 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
-              <div className="flex items-center justify-between mb-1.5">
+            {/* Unit Cost (₹) & Valuation */}
+            <div className="md:col-span-2 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1">
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <DollarSign className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Cost per Unit (${effectiveUom})</span>
+                  <IndianRupee className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>Cost per Unit (₹ / {effectiveUom})</span>
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setUnitCost(approxSuggestedCost)}
-                  className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
-                >
-                  Use approx: ${approxSuggestedCost.toFixed(2)}
-                </button>
+                <div className="flex items-center gap-2">
+                  {unitCost > 0 ? (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                      Actual Cost Configured
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800">
+                      Category Approx (₹{approxSuggestedCost.toFixed(2)})
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setUnitCost(approxSuggestedCost)}
+                    className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                  >
+                    Set Approx (₹{approxSuggestedCost.toFixed(2)})
+                  </button>
+                  {unitCost > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setUnitCost(0)}
+                      className="text-[11px] text-slate-400 hover:text-rose-600 hover:underline font-medium"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                  <span className="absolute left-3 top-2.5 text-sm font-semibold text-slate-400">$</span>
+                  <span className="absolute left-3 top-2.5 text-sm font-semibold text-slate-400">₹</span>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
-                    placeholder={`Approx $${approxSuggestedCost.toFixed(2)}`}
+                    placeholder={`e.g. ${approxSuggestedCost.toFixed(2)} (or leave for category approx)`}
                     value={unitCost > 0 ? unitCost : ''}
                     onChange={(e) => setUnitCost(parseFloat(e.target.value) || 0)}
                     className="w-full h-10 pl-7 pr-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                Used to compute real-time warehouse inventory valuation. Suggested approx for {currentCategoryName}: <strong>${approxSuggestedCost.toFixed(2)}</strong>.
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Used to compute real-time warehouse inventory valuation. Enter the product's actual unit purchase/production cost, or use the category estimate of <strong>₹{approxSuggestedCost.toFixed(2)}</strong> for {currentCategoryName}.
               </p>
             </div>
 
@@ -484,11 +513,24 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                   <ImageIcon className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Product Photos (Upload up to 2)</span>
+                  <span>Product Photos (Upload 1 or 2 Photos)</span>
                 </label>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Visible across Stock Table, Kanban & Detail views
-                </span>
+                <div className="flex items-center gap-2">
+                  {imageUrl && imageUrl2 && (
+                    <button
+                      type="button"
+                      onClick={handleSwapPhotos}
+                      className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-800 transition"
+                      title="Swap Photo 1 and Photo 2"
+                    >
+                      <ArrowLeftRight className="w-3 h-3" />
+                      <span>Swap Photos</span>
+                    </button>
+                  )}
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                    Shown in Warehouse & Stock views
+                  </span>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -646,7 +688,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   <span>Seeds central warehouse (WH/Stock) & logs opening audit entry.</span>
                   {initialStock > 0 && (
                     <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                      Opening Valuation: ${(initialStock * (unitCost > 0 ? unitCost : approxSuggestedCost)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      Opening Valuation: ₹{(initialStock * (unitCost > 0 ? unitCost : approxSuggestedCost)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   )}
                 </div>

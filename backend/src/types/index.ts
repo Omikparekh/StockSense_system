@@ -38,6 +38,7 @@ export interface ProductWithStock extends Product {
   free_stock: number;
   stock_status: 'in_stock' | 'low_stock' | 'out_of_stock';
   total_value: number;
+  is_approx_cost?: boolean;
 }
 
 export interface LocationStock {
