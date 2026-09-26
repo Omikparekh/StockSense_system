@@ -218,3 +218,55 @@ export interface DeliveryDetailApiResponse {
     items: DeliveryItem[];
   };
 }
+
+export interface Transfer {
+  id: number;
+  reference: string;
+  operation_type: 'INT';
+  warehouse_id: number;
+  warehouse_name: string;
+  warehouse_code: string;
+  partner_name: string;
+  source_location_id: number;
+  source_path: string;
+  source_name: string;
+  destination_location_id: number;
+  destination_path: string;
+  destination_name: string;
+  scheduled_date: string;
+  status: DocumentStatus;
+  notes: string;
+  created_by_user: string;
+  created_at: string;
+  validated_at?: string;
+  total_items: number;
+  total_demand: number;
+  total_done: number;
+}
+
+export interface TransferItem {
+  id: number;
+  operation_id: number;
+  product_id: number;
+  product_name: string;
+  product_sku: string;
+  product_category: string;
+  product_uom: string;
+  per_unit_weight: number;
+  demand_qty: number;
+  done_qty: number;
+  source_on_hand: number;
+}
+
+export interface TransfersApiResponse {
+  success: boolean;
+  data: Transfer[];
+}
+
+export interface TransferDetailApiResponse {
+  success: boolean;
+  data: {
+    transfer: Transfer;
+    items: TransferItem[];
+  };
+}

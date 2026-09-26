@@ -10,6 +10,7 @@ import { StockView } from './components/products/StockView';
 import { WarehouseView } from './components/warehouses/WarehouseView';
 import { ReceiptsView } from './components/operations/ReceiptsView';
 import { DeliveriesView } from './components/operations/DeliveriesView';
+import { TransfersView } from './components/operations/TransfersView';
 import { Card } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
 import { Button } from './components/ui/Button';
@@ -224,14 +225,7 @@ const ViewRouter: React.FC = () => {
     case 'deliveries':
       return <DeliveriesView />;
     case 'transfers':
-      return (
-        <PlaceholderOperationalView
-          title="Internal Transfers"
-          subtitle="Bin-to-bin and location-to-location internal shifting"
-          codePrefix="WH/INT/00001"
-          icon={<ArrowRightLeft className="w-6 h-6" />}
-        />
-      );
+      return <TransfersView />;
     case 'adjustments':
       return (
         <PlaceholderOperationalView
