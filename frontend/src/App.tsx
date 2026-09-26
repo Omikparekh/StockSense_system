@@ -8,6 +8,7 @@ import { ForgotPasswordModal } from './components/auth/ForgotPasswordModal';
 import { AppShell } from './components/layout/AppShell';
 import { StockView } from './components/products/StockView';
 import { WarehouseView } from './components/warehouses/WarehouseView';
+import { ReceiptsView } from './components/operations/ReceiptsView';
 import { Card } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
 import { Button } from './components/ui/Button';
@@ -218,14 +219,7 @@ const ViewRouter: React.FC = () => {
     case 'dashboard':
       return <DashboardView />;
     case 'receipts':
-      return (
-        <PlaceholderOperationalView
-          title="Inbound Receipts"
-          subtitle="Vendor delivery reception, destination bin assignment, and inventory increments"
-          codePrefix="WH/IN/00001"
-          icon={<PackagePlus className="w-6 h-6" />}
-        />
-      );
+      return <ReceiptsView />;
     case 'deliveries':
       return (
         <PlaceholderOperationalView

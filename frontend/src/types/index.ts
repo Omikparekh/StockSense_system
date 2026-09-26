@@ -115,3 +115,52 @@ export interface LocationsApiResponse {
   success: boolean;
   data: LocationItem[];
 }
+
+export interface Receipt {
+  id: number;
+  reference: string;
+  operation_type: 'IN';
+  warehouse_id: number;
+  warehouse_name: string;
+  warehouse_code: string;
+  partner_name: string;
+  destination_location_id: number | null;
+  destination_path: string;
+  destination_name: string;
+  scheduled_date: string;
+  status: DocumentStatus;
+  notes: string;
+  created_by_user: string;
+  created_at: string;
+  validated_at?: string;
+  total_items: number;
+  total_demand: number;
+  total_done: number;
+}
+
+export interface ReceiptItem {
+  id: number;
+  operation_id: number;
+  product_id: number;
+  product_name: string;
+  product_sku: string;
+  product_category: string;
+  product_uom: string;
+  per_unit_weight: number;
+  demand_qty: number;
+  done_qty: number;
+  current_on_hand: number;
+}
+
+export interface ReceiptsApiResponse {
+  success: boolean;
+  data: Receipt[];
+}
+
+export interface ReceiptDetailApiResponse {
+  success: boolean;
+  data: {
+    receipt: Receipt;
+    items: ReceiptItem[];
+  };
+}

@@ -182,6 +182,33 @@ class DatabaseClient {
         operation_type VARCHAR(10) NOT NULL,
         last_number INTEGER NOT NULL DEFAULT 0,
         UNIQUE(warehouse_code, operation_type)
+      );`,
+
+      // Operations table (Receipts WH/IN, Deliveries WH/OUT, Transfers WH/INT, Adjustments WH/ADJ)
+      `CREATE TABLE IF NOT EXISTS operations (
+        id ${autoInc},
+        reference VARCHAR(100) UNIQUE NOT NULL,
+        operation_type VARCHAR(10) NOT NULL,
+        warehouse_id INTEGER NOT NULL REFERENCES warehouses(id),
+        partner_name VARCHAR(255),
+        source_location_id INTEGER REFERENCES locations(id),
+        destination_location_id INTEGER REFERENCES locations(id),
+        scheduled_date VARCHAR(50) NOT NULL,
+        status VARCHAR(50) NOT NULL DEFAULT 'Draft',
+        notes TEXT,
+        created_by_user VARCHAR(255),
+        created_at ${timestampDefault},
+        validated_at ${timestampDefault}
+      );`,
+
+      // Line items for operations
+      `CREATE TABLE IF NOT EXISTS operation_items (
+        id ${autoInc},
+        operation_id INTEGER NOT NULL REFERENCES operations(id) ON DELETE CASCADE,
+        product_id INTEGER NOT NULL REFERENCES products(id),
+        demand_qty NUMERIC(12, 2) NOT NULL,
+        done_qty NUMERIC(12, 2) NOT NULL DEFAULT 0,
+        created_at ${timestampDefault}
       );`
     ];
 
@@ -268,6 +295,107 @@ class DatabaseClient {
           }
         }
         console.log('[Database] Seeded 6 realistic demo products with initial stock balances.');
+      }
+
+      // Check and seed demo operations
+      const existingOp = await this.queryOne('SELECT id FROM operations LIMIT 1');
+      if (!existingOp) {
+        const wh = await this.queryOne<{ id: number }>('SELECT id FROM warehouses WHERE short_code = $1', ['WH']);
+        const whId = wh ? wh.id : 1;
+        const stockLoc = await this.queryOne<{ id: number }>("SELECT id FROM locations WHERE path = 'WH/Stock'");
+        const stockLocId = stockLoc ? stockLoc.id : 1;
+        const outputLoc = await this.queryOne<{ id: number }>("SELECT id FROM locations WHERE path = 'WH/Output'");
+        const outputLocId = outputLoc ? outputLoc.id : 2;
+
+        const prod1 = await this.queryOne<{ id: number }>("SELECT id FROM products WHERE sku = 'STL-ROD-01'");
+        const prod2 = await this.queryOne<{ id: number }>("SELECT id FROM products WHERE sku = 'BLT-IND-03'");
+        const prod3 = await this.queryOne<{ id: number }>("SELECT id FROM products WHERE sku = 'MTR-ELC-06'");
+        const prod4 = await this.queryOne<{ id: number }>("SELECT id FROM products WHERE sku = 'BOX-PKG-07'");
+
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+        const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+
+        // 1. Inbound Receipt WH/IN/00001 (Ready)
+        const op1 = await this.execute(
+          `INSERT INTO operations (reference, operation_type, warehouse_id, partner_name, destination_location_id, scheduled_date, status, notes, created_by_user)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          ['WH/IN/00001', 'IN', whId, 'Tata Steel Suppliers', stockLocId, todayStr, 'Ready', 'Primary raw material delivery for Q3 production', 'admin']
+        );
+        if (op1.lastInsertRowid && prod1) {
+          await this.execute(
+            `INSERT INTO operation_items (operation_id, product_id, demand_qty, done_qty) VALUES ($1, $2, $3, $4)`,
+            [op1.lastInsertRowid, prod1.id, 25.0, 25.0]
+          );
+        }
+
+        // 2. Inbound Receipt WH/IN/00002 (Done)
+        const op2 = await this.execute(
+          `INSERT INTO operations (reference, operation_type, warehouse_id, partner_name, destination_location_id, scheduled_date, status, notes, created_by_user, validated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CURRENT_TIMESTAMP)`,
+          ['WH/IN/00002', 'IN', whId, 'Fastener World Logistics', stockLocId, yesterday, 'Done', 'Expedited bolt shipment received and counted', 'admin']
+        );
+        if (op2.lastInsertRowid && prod2) {
+          await this.execute(
+            `INSERT INTO operation_items (operation_id, product_id, demand_qty, done_qty) VALUES ($1, $2, $3, $4)`,
+            [op2.lastInsertRowid, prod2.id, 500.0, 500.0]
+          );
+        }
+
+        // 3. Outbound Delivery WH/OUT/00001 (Ready)
+        const op3 = await this.execute(
+          `INSERT INTO operations (reference, operation_type, warehouse_id, partner_name, source_location_id, destination_location_id, scheduled_date, status, notes, created_by_user)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          ['WH/OUT/00001', 'OUT', whId, 'Apex Construction Corp', stockLocId, outputLocId, todayStr, 'Ready', 'Scheduled dispatch batch A', 'admin']
+        );
+        if (op3.lastInsertRowid && prod1) {
+          await this.execute(
+            `INSERT INTO operation_items (operation_id, product_id, demand_qty, done_qty) VALUES ($1, $2, $3, $4)`,
+            [op3.lastInsertRowid, prod1.id, 10.0, 0.0]
+          );
+        }
+
+        // 4. Outbound Delivery WH/OUT/00002 (Waiting - insufficient stock)
+        const op4 = await this.execute(
+          `INSERT INTO operations (reference, operation_type, warehouse_id, partner_name, source_location_id, destination_location_id, scheduled_date, status, notes, created_by_user)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          ['WH/OUT/00002', 'OUT', whId, 'Metro Machinery Works', stockLocId, outputLocId, tomorrow, 'Waiting', 'Waiting for electric motor replenishment', 'admin']
+        );
+        if (op4.lastInsertRowid && prod3) {
+          await this.execute(
+            `INSERT INTO operation_items (operation_id, product_id, demand_qty, done_qty) VALUES ($1, $2, $3, $4)`,
+            [op4.lastInsertRowid, prod3.id, 5.0, 0.0]
+          );
+        }
+
+        // 5. Internal Transfer WH/INT/00001 (Draft)
+        const op5 = await this.execute(
+          `INSERT INTO operations (reference, operation_type, warehouse_id, partner_name, source_location_id, destination_location_id, scheduled_date, status, notes, created_by_user)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          ['WH/INT/00001', 'INT', whId, 'Internal Dispatch Dept', stockLocId, outputLocId, todayStr, 'Draft', 'Transfer to packing station', 'admin']
+        );
+        if (op5.lastInsertRowid && prod4) {
+          await this.execute(
+            `INSERT INTO operation_items (operation_id, product_id, demand_qty, done_qty) VALUES ($1, $2, $3, $4)`,
+            [op5.lastInsertRowid, prod4.id, 50.0, 0.0]
+          );
+        }
+
+        // Update sequences
+        await this.execute(
+          `INSERT INTO sequences (warehouse_code, operation_type, last_number) VALUES ($1, $2, $3)`,
+          ['WH', 'IN', 2]
+        );
+        await this.execute(
+          `INSERT INTO sequences (warehouse_code, operation_type, last_number) VALUES ($1, $2, $3)`,
+          ['WH', 'OUT', 2]
+        );
+        await this.execute(
+          `INSERT INTO sequences (warehouse_code, operation_type, last_number) VALUES ($1, $2, $3)`,
+          ['WH', 'INT', 1]
+        );
+
+        console.log('[Database] Seeded demo operations (WH/IN/00001-2, WH/OUT/00001-2, WH/INT/00001) and sequences.');
       }
     } catch (err) {
       console.warn('[Database] Seeding notice:', err);
