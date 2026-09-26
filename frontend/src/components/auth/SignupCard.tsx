@@ -53,22 +53,22 @@ export const SignupCard: React.FC<SignupCardProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-2xl shadow-elevated p-8 sm:p-10 space-y-6">
+    <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-elevated p-8 sm:p-10 space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
       {/* Brand Icon & Heading matching wireframe */}
       <div className="text-center space-y-2">
         <div className="inline-flex w-12 h-12 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 items-center justify-center text-white shadow-md shadow-brand-500/20 mb-1">
           <Boxes className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Create an Account</h1>
-        <p className="text-xs text-slate-500">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Create an Account</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Enter your details below. A 6-digit OTP will be dispatched to verify your email.
         </p>
       </div>
 
       {/* Error alert */}
       {error && (
-        <div className="flex items-start gap-2.5 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs">
-          <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2.5 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-300 text-xs">
+          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
       )}
@@ -100,7 +100,7 @@ export const SignupCard: React.FC<SignupCardProps> = ({
         />
 
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
             Operational Role
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -109,24 +109,24 @@ export const SignupCard: React.FC<SignupCardProps> = ({
               onClick={() => setRole('warehouse_staff')}
               className={`p-2.5 text-xs font-medium rounded-lg border text-left transition-all ${
                 role === 'warehouse_staff'
-                  ? 'border-brand-600 bg-brand-50/50 text-brand-900 font-semibold ring-1 ring-brand-500'
-                  : 'border-slate-200 hover:border-slate-300 text-slate-700'
+                  ? 'border-brand-600 bg-brand-50/50 dark:bg-brand-950/40 text-brand-900 dark:text-brand-200 font-semibold ring-1 ring-brand-500'
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 text-slate-700 dark:text-slate-300'
               }`}
             >
               <div className="font-bold">Warehouse Staff</div>
-              <div className="text-[10px] text-slate-500">Receipts & pick/pack operations</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400">Receipts & pick/pack operations</div>
             </button>
             <button
               type="button"
               onClick={() => setRole('inventory_manager')}
               className={`p-2.5 text-xs font-medium rounded-lg border text-left transition-all ${
                 role === 'inventory_manager'
-                  ? 'border-brand-600 bg-brand-50/50 text-brand-900 font-semibold ring-1 ring-brand-500'
-                  : 'border-slate-200 hover:border-slate-300 text-slate-700'
+                  ? 'border-brand-600 bg-brand-50/50 dark:bg-brand-950/40 text-brand-900 dark:text-brand-200 font-semibold ring-1 ring-brand-500'
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 text-slate-700 dark:text-slate-300'
               }`}
             >
               <div className="font-bold">Inventory Manager</div>
-              <div className="text-[10px] text-slate-500">Transfers, audits & reorders</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400">Transfers, audits & reorders</div>
             </button>
           </div>
         </div>
@@ -155,13 +155,13 @@ export const SignupCard: React.FC<SignupCardProps> = ({
       </form>
 
       {/* Switch to Sign in */}
-      <div className="text-center pt-2 border-t border-slate-100">
-        <p className="text-xs text-slate-600">
+      <div className="text-center pt-2 border-t border-slate-100 dark:border-slate-800">
+        <p className="text-xs text-slate-600 dark:text-slate-400">
           Already have an account?{' '}
           <button
             type="button"
             onClick={onSwitchToLogin}
-            className="font-semibold text-brand-600 hover:text-brand-700 hover:underline"
+            className="font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline"
           >
             Sign in
           </button>

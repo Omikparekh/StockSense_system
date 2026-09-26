@@ -57,8 +57,8 @@ export const LoginCard: React.FC<LoginCardProps> = ({
 
       {/* Error alert */}
       {error && (
-        <div className="flex items-start gap-2.5 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs">
-          <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2.5 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-300 text-xs">
+          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
       )}
@@ -88,7 +88,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
             <button
               type="button"
               onClick={onOpenForgotPassword}
-              className="text-xs font-medium text-brand-600 hover:text-brand-700 hover:underline transition-colors"
+              className="text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline transition-colors"
             >
               Forgot password?
             </button>

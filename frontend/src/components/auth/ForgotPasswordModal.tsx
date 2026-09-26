@@ -83,15 +83,15 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-elevated p-6 sm:p-8 space-y-6">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-elevated p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 items-center justify-center text-amber-600 mb-1">
+          <div className="inline-flex w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 items-center justify-center text-amber-600 dark:text-amber-400 mb-1">
             <KeyRound className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
             {step === 'request' ? 'Reset Your Password' : 'Enter Reset Verification Code'}
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             {step === 'request'
               ? 'Enter your Login ID or registered email. An OTP reset code will be generated.'
               : `Code sent to ${targetEmail}. Set your new password below.`}
@@ -99,29 +99,29 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
         </div>
 
         {error && (
-          <div className="flex items-start gap-2 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs">
-            <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-300 text-xs">
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
         {successMessage && (
-          <div className="flex items-start gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-300 text-xs">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
             <span>{successMessage}</span>
           </div>
         )}
 
         {step === 'reset' && devOtp && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs flex items-center justify-between text-emerald-900">
+          <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded-xl p-3 text-xs flex items-center justify-between text-emerald-900 dark:text-emerald-200">
             <div>
               <span className="font-semibold block">Simulated Reset OTP:</span>
-              <code className="text-sm font-mono font-bold tracking-widest text-emerald-700">{devOtp}</code>
+              <code className="text-sm font-mono font-bold tracking-widest text-emerald-700 dark:text-emerald-300">{devOtp}</code>
             </div>
             <button
               type="button"
               onClick={() => setOtpCode(devOtp)}
-              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-white border border-emerald-300 rounded text-emerald-700 hover:bg-emerald-100/50"
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 rounded text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100/50 dark:hover:bg-emerald-900/50"
             >
               <Copy className="w-3 h-3" /> Auto-fill
             </button>
@@ -151,7 +151,7 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
         ) : (
           <form onSubmit={handleResetPassword} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5 text-center">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5 text-center">
                 6-Digit Reset Code
               </label>
               <input
@@ -160,7 +160,7 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
                 placeholder="••••••"
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                className="w-full text-center tracking-[0.5em] text-xl font-mono py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold"
+                className="w-full text-center tracking-[0.5em] text-xl font-mono py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold text-slate-900 dark:text-slate-100"
                 required
               />
             </div>

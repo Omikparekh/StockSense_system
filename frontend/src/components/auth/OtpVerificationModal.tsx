@@ -57,29 +57,29 @@ export const OtpVerificationModal: React.FC<OtpVerificationModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-elevated p-6 sm:p-8 space-y-6">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-elevated p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-200 items-center justify-center text-brand-600 mb-1">
+          <div className="inline-flex w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 items-center justify-center text-brand-600 dark:text-brand-400 mb-1">
             <Mail className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-slate-900">Email Verification Required</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Email Verification Required</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             A 6-digit security code was dispatched to{' '}
-            <span className="font-semibold text-slate-800">{email}</span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200">{email}</span>
           </p>
         </div>
 
         {/* Development simulation banner */}
         {devOtpCode && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs flex items-center justify-between text-emerald-900">
+          <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded-xl p-3 text-xs flex items-center justify-between text-emerald-900 dark:text-emerald-200">
             <div>
               <span className="font-semibold block">Simulated OTP Code:</span>
-              <code className="text-sm font-mono font-bold tracking-widest text-emerald-700">{devOtpCode}</code>
+              <code className="text-sm font-mono font-bold tracking-widest text-emerald-700 dark:text-emerald-300">{devOtpCode}</code>
             </div>
             <button
               type="button"
               onClick={handleUseDevOtp}
-              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-white border border-emerald-300 rounded text-emerald-700 hover:bg-emerald-100/50"
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 rounded text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100/50 dark:hover:bg-emerald-900/50"
             >
               <Copy className="w-3 h-3" /> Auto-fill
             </button>
@@ -87,15 +87,15 @@ export const OtpVerificationModal: React.FC<OtpVerificationModalProps> = ({
         )}
 
         {error && (
-          <div className="flex items-start gap-2 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs">
-            <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-300 text-xs">
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleVerify} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5 text-center">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5 text-center">
               6-Digit OTP Code
             </label>
             <input
@@ -104,7 +104,7 @@ export const OtpVerificationModal: React.FC<OtpVerificationModalProps> = ({
               placeholder="••••••"
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-              className="w-full text-center tracking-[0.5em] text-2xl font-mono py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white text-slate-900 font-bold"
+              className="w-full text-center tracking-[0.5em] text-2xl font-mono py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-slate-800 text-slate-900 dark:text-slate-100 font-bold"
               required
               autoFocus
             />
