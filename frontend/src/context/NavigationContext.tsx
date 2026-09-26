@@ -23,9 +23,9 @@ interface NavigationContextType {
   activeWarehouse: WarehouseOption;
   setActiveWarehouse: (wh: WarehouseOption) => void;
   isCommandPaletteOpen: boolean;
-  setIsCommandPaletteOpen: (open: boolean) => void;
+  setIsCommandPaletteOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isNotificationsOpen: boolean;
-  setIsNotificationsOpen: (open: boolean) => void;
+  setIsNotificationsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   unreadNotificationsCount: number;
   setUnreadNotificationsCount: (count: number) => void;
 }

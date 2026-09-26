@@ -66,25 +66,25 @@ export const NotificationDrawer: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-150">
       <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-sm bg-white shadow-elevated border-l border-slate-200 flex flex-col">
+        <div className="w-screen max-w-sm bg-white dark:bg-slate-900 shadow-elevated border-l border-slate-200 dark:border-slate-800 flex flex-col transition-colors duration-200">
           {/* Header */}
-          <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-indigo-50 text-brand-600">
+              <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-brand-600 dark:text-brand-400">
                 <Bell className="w-4 h-4" />
               </div>
-              <h2 className="font-bold text-sm text-slate-900">Notifications</h2>
+              <h2 className="font-bold text-sm text-slate-900 dark:text-white">Notifications</h2>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleMarkAllRead}
-                className="text-[11px] font-semibold text-brand-600 hover:text-brand-800"
+                className="text-[11px] font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300"
               >
                 Mark read
               </button>
               <button
                 onClick={() => setIsNotificationsOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-md"
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -99,8 +99,8 @@ export const NotificationDrawer: React.FC = () => {
                 onClick={() => handleItemClick(item)}
                 className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all ${
                   item.read
-                    ? 'bg-white border-slate-200/80 opacity-75'
-                    : 'bg-slate-50/80 border-slate-200 shadow-xs hover:border-brand-300'
+                    ? 'bg-white dark:bg-slate-900/60 border-slate-200/80 dark:border-slate-800 opacity-75'
+                    : 'bg-slate-50/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 shadow-xs hover:border-brand-300 dark:hover:border-brand-500'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2 mb-1.5">
@@ -112,16 +112,16 @@ export const NotificationDrawer: React.FC = () => {
                     {item.severity === 'success' && (
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                     )}
-                    <span className="font-semibold text-xs text-slate-900">{item.title}</span>
+                    <span className="font-semibold text-xs text-slate-900 dark:text-slate-100">{item.title}</span>
                   </div>
-                  <span className="text-[10px] text-slate-400">{item.time}</span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500">{item.time}</span>
                 </div>
-                <p className="text-xs text-slate-600 leading-relaxed">{item.message}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{item.message}</p>
                 <div className="mt-2 flex items-center justify-between text-[11px]">
                   <Badge variant={item.severity === 'warning' ? 'warning' : item.severity === 'info' ? 'ready' : 'done'}>
                     {item.severity.toUpperCase()}
                   </Badge>
-                  <span className="inline-flex items-center gap-0.5 text-brand-600 font-medium">
+                  <span className="inline-flex items-center gap-0.5 text-brand-600 dark:text-brand-400 font-medium">
                     View <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
@@ -130,7 +130,7 @@ export const NotificationDrawer: React.FC = () => {
           </div>
 
           {/* Footer */}
-          <div className="p-3 bg-slate-50 border-t border-slate-200 text-center text-[11px] text-slate-500">
+          <div className="p-3 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-800 text-center text-[11px] text-slate-500 dark:text-slate-400">
             Real-time inventory alerts active
           </div>
         </div>

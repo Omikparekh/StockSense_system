@@ -43,14 +43,14 @@ export const LoginCard: React.FC<LoginCardProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-2xl shadow-elevated p-8 sm:p-10 space-y-6">
+    <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-elevated p-8 sm:p-10 space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
       {/* Brand Icon & Heading matching wireframe */}
       <div className="text-center space-y-2">
         <div className="inline-flex w-12 h-12 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 items-center justify-center text-white shadow-md shadow-brand-500/20 mb-1">
           <Boxes className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Sign in to StockSense</h1>
-        <p className="text-xs text-slate-500">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Sign in to StockSense</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Enter your valid Login ID and password to access the inventory console.
         </p>
       </div>
@@ -101,17 +101,17 @@ export const LoginCard: React.FC<LoginCardProps> = ({
       </form>
 
       {/* Demo Credentials Helper for Multi-laptop reviewers */}
-      <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs space-y-2">
-        <div className="flex items-center gap-1.5 text-slate-700 font-semibold">
-          <KeyRound className="w-3.5 h-3.5 text-brand-600" />
+      <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs space-y-2">
+        <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-semibold">
+          <KeyRound className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
           <span>Instant Evaluator Credentials</span>
         </div>
-        <div className="flex items-center justify-between text-slate-600">
-          <span>Admin: <code className="font-mono text-slate-900 font-semibold">admin</code> / <code className="font-mono text-slate-900 font-semibold">AdminPassword123!</code></span>
+        <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
+          <span>Admin: <code className="font-mono text-slate-900 dark:text-white font-semibold">admin</code> / <code className="font-mono text-slate-900 dark:text-white font-semibold">AdminPassword123!</code></span>
           <button
             type="button"
             onClick={() => handleQuickDemoLogin('admin', 'AdminPassword123!')}
-            className="text-[11px] font-semibold text-brand-600 hover:text-brand-800 uppercase tracking-wider"
+            className="text-[11px] font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 uppercase tracking-wider"
           >
             Auto-fill
           </button>
@@ -119,13 +119,13 @@ export const LoginCard: React.FC<LoginCardProps> = ({
       </div>
 
       {/* Switch to Signup */}
-      <div className="text-center pt-2 border-t border-slate-100">
-        <p className="text-xs text-slate-600">
+      <div className="text-center pt-2 border-t border-slate-100 dark:border-slate-800">
+        <p className="text-xs text-slate-600 dark:text-slate-400">
           Don't have an account?{' '}
           <button
             type="button"
             onClick={onSwitchToSignup}
-            className="font-semibold text-brand-600 hover:text-brand-700 hover:underline"
+            className="font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline"
           >
             Sign up
           </button>

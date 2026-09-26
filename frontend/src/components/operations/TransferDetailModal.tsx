@@ -138,22 +138,22 @@ export const TransferDetailModal: React.FC<TransferDetailModalProps> = ({
         role="dialog"
       >
         {/* Top Header */}
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
               <ArrowRightLeft className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-mono text-sm font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                <span className="font-mono text-sm font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800">
                   {transfer?.reference || 'WH/INT/...'}
                 </span>
-                <span className="text-xs text-slate-500 font-medium">Internal Relocation</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Internal Relocation</span>
               </div>
-              <h3 className="text-base font-bold text-slate-900 mt-0.5 flex items-center space-x-1.5">
-                <span className="font-mono text-indigo-700">{transfer?.source_path}</span>
-                <ArrowRight className="w-4 h-4 text-slate-400" />
-                <span className="font-mono text-indigo-700">{transfer?.destination_path}</span>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mt-0.5 flex items-center space-x-1.5">
+                <span className="font-mono text-indigo-700 dark:text-indigo-400">{transfer?.source_path}</span>
+                <ArrowRight className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                <span className="font-mono text-indigo-700 dark:text-indigo-400">{transfer?.destination_path}</span>
               </h3>
             </div>
           </div>
@@ -161,14 +161,14 @@ export const TransferDetailModal: React.FC<TransferDetailModalProps> = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={handlePrint}
-              className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 rounded-lg transition"
+              className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition"
               title="Print Transfer Slip"
             >
               <Printer className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/60 transition"
+              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800 transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -176,30 +176,30 @@ export const TransferDetailModal: React.FC<TransferDetailModalProps> = ({
         </div>
 
         {/* Status Workflow Ribbon */}
-        <div className="px-6 py-3 bg-white border-b border-slate-200 flex items-center justify-between">
+        <div className="px-6 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2 text-xs">
             <span className={`px-2.5 py-1 rounded-md font-bold uppercase tracking-wider ${
               transfer?.status === 'Draft' 
-                ? 'bg-slate-900 text-white' 
-                : 'bg-slate-100 text-slate-500'
+                ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900' 
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
             }`}>
               1. Draft
             </span>
-            <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
             <span className={`px-2.5 py-1 rounded-md font-bold uppercase tracking-wider ${
               transfer?.status === 'Ready' 
                 ? 'bg-amber-600 text-white' 
-                : 'bg-slate-100 text-slate-500'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
             }`}>
               2. Ready to Move
             </span>
-            <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
             <span className={`px-2.5 py-1 rounded-md font-bold uppercase tracking-wider ${
               transfer?.status === 'Done' 
                 ? 'bg-emerald-600 text-white' 
                 : transfer?.status === 'Cancelled'
                 ? 'bg-rose-600 text-white'
-                : 'bg-slate-100 text-slate-500'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
             }`}>
               {transfer?.status === 'Cancelled' ? 'Cancelled' : '3. Relocated (Done)'}
             </span>
@@ -212,7 +212,7 @@ export const TransferDetailModal: React.FC<TransferDetailModalProps> = ({
                 <button
                   onClick={handleCancel}
                   disabled={actionLoading}
-                  className="px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition"
+                  className="px-3 py-1.5 text-xs font-semibold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 rounded-lg transition"
                 >
                   Cancel
                 </button>
@@ -232,7 +232,7 @@ export const TransferDetailModal: React.FC<TransferDetailModalProps> = ({
                 <button
                   onClick={handleCancel}
                   disabled={actionLoading}
-                  className="px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition"
+                  className="px-3 py-1.5 text-xs font-semibold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 rounded-lg transition"
                 >
                   Cancel
                 </button>
@@ -252,73 +252,73 @@ export const TransferDetailModal: React.FC<TransferDetailModalProps> = ({
         {/* Modal Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-6 space-y-5">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-2 text-red-700 text-sm">
+            <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-lg flex items-start space-x-2 text-red-700 dark:text-red-300 text-sm">
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start space-x-2 text-emerald-800 text-sm">
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded-lg flex items-start space-x-2 text-emerald-800 dark:text-emerald-300 text-sm">
               <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
 
           {loading ? (
-            <div className="py-20 flex flex-col items-center justify-center space-y-3 text-slate-500">
+            <div className="py-20 flex flex-col items-center justify-center space-y-3 text-slate-500 dark:text-slate-400">
               <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin" />
               <p className="text-sm">Loading transfer details...</p>
             </div>
           ) : transfer ? (
             <>
               {/* Route Summary Banner */}
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 text-xs grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
-                  <span className="block text-slate-400 font-semibold uppercase text-[10px]">From Location</span>
-                  <span className="font-mono font-bold text-indigo-700 text-sm mt-0.5 block">
+                  <span className="block text-slate-400 dark:text-slate-500 font-semibold uppercase text-[10px]">From Location</span>
+                  <span className="font-mono font-bold text-indigo-700 dark:text-indigo-400 text-sm mt-0.5 block">
                     {transfer.source_path}
                   </span>
                 </div>
 
                 <div>
-                  <span className="block text-slate-400 font-semibold uppercase text-[10px]">To Location</span>
-                  <span className="font-mono font-bold text-indigo-700 text-sm mt-0.5 block">
+                  <span className="block text-slate-400 dark:text-slate-500 font-semibold uppercase text-[10px]">To Location</span>
+                  <span className="font-mono font-bold text-indigo-700 dark:text-indigo-400 text-sm mt-0.5 block">
                     {transfer.destination_path}
                   </span>
                 </div>
 
                 <div>
-                  <span className="block text-slate-400 font-semibold uppercase text-[10px]">Scheduled Date</span>
-                  <span className="font-semibold text-slate-800 text-sm mt-0.5 block flex items-center">
-                    <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                  <span className="block text-slate-400 dark:text-slate-500 font-semibold uppercase text-[10px]">Scheduled Date</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm mt-0.5 block flex items-center">
+                    <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400 dark:text-slate-500" />
                     {transfer.scheduled_date}
                   </span>
                 </div>
 
                 <div>
-                  <span className="block text-slate-400 font-semibold uppercase text-[10px]">Company Net Effect</span>
-                  <span className="font-bold text-emerald-700 text-sm mt-0.5 block">
+                  <span className="block text-slate-400 dark:text-slate-500 font-semibold uppercase text-[10px]">Company Net Effect</span>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400 text-sm mt-0.5 block">
                     Neutral (0 Delta)
                   </span>
                 </div>
               </div>
 
               {transfer.notes && (
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-600">
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300">
                   <span className="font-semibold">Notes:</span> {transfer.notes}
                 </div>
               )}
 
               {/* Line Items Table */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
                   Products to Move ({lineItems.length})
                 </h4>
 
-                <div className="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                    <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
                       <tr>
                         <th className="py-2.5 px-3">Product Name & SKU</th>
                         <th className="py-2.5 px-3 text-center">Unit</th>
@@ -327,20 +327,20 @@ export const TransferDetailModal: React.FC<TransferDetailModalProps> = ({
                         <th className="py-2.5 px-3 text-right">Done Qty</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                       {lineItems.map((item, index) => (
-                        <tr key={item.id} className="hover:bg-slate-50/50">
+                        <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
                           <td className="py-3 px-3">
-                            <span className="font-semibold text-slate-900 block">{item.product_name}</span>
-                            <span className="font-mono text-[11px] text-slate-500 font-medium">{item.product_sku}</span>
+                            <span className="font-semibold text-slate-900 dark:text-slate-100 block">{item.product_name}</span>
+                            <span className="font-mono text-[11px] text-slate-500 dark:text-slate-400 font-medium">{item.product_sku}</span>
                           </td>
-                          <td className="py-3 px-3 text-center text-slate-600 font-medium">
+                          <td className="py-3 px-3 text-center text-slate-600 dark:text-slate-300 font-medium">
                             {item.product_uom}
                           </td>
-                          <td className="py-3 px-3 text-right text-slate-700 font-mono font-medium">
+                          <td className="py-3 px-3 text-right text-slate-700 dark:text-slate-300 font-mono font-medium">
                             {item.source_on_hand} {item.product_uom}
                           </td>
-                          <td className="py-3 px-3 text-right font-bold text-slate-900">
+                          <td className="py-3 px-3 text-right font-bold text-slate-900 dark:text-slate-100">
                             {item.demand_qty}
                           </td>
                           <td className="py-3 px-3 text-right">
@@ -351,11 +351,11 @@ export const TransferDetailModal: React.FC<TransferDetailModalProps> = ({
                                 min="0"
                                 value={item.done_qty || item.demand_qty}
                                 onChange={(e) => handleDoneQtyChange(index, parseFloat(e.target.value) || 0)}
-                                className="w-20 h-7 px-2 text-right border border-amber-300 rounded font-bold text-amber-900 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 bg-amber-50/30"
+                                className="w-20 h-7 px-2 text-right border border-amber-300 dark:border-amber-700 rounded font-bold text-amber-900 dark:text-amber-100 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 bg-amber-50/30 dark:bg-amber-950/40"
                               />
                             ) : (
                               <span className={`font-bold ${
-                                transfer.status === 'Done' ? 'text-emerald-700' : 'text-slate-400'
+                                transfer.status === 'Done' ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'
                               }`}>
                                 {transfer.status === 'Done' ? item.done_qty : '—'}
                               </span>

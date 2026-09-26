@@ -42,26 +42,26 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const breadcrumbs = getBreadcrumbs();
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-brand-500 selection:text-white transition-colors duration-200">
       {/* Top Application Header */}
       <TopNav onToggleMobileMenu={() => setMobileMenuOpen(true)} />
 
       {/* Sub-header Breadcrumb Bar */}
-      <div className="bg-white border-b border-slate-200/80 py-2 px-4 sm:px-6 lg:px-8 shadow-2xs">
+      <div className="bg-white dark:bg-slate-900/90 border-b border-slate-200/80 dark:border-slate-800 py-2 px-4 sm:px-6 lg:px-8 shadow-2xs transition-colors duration-200">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <nav className="flex items-center space-x-1.5 text-xs text-slate-500">
+          <nav className="flex items-center space-x-1.5 text-xs text-slate-500 dark:text-slate-400">
             {breadcrumbs.map((crumb, idx) => (
               <React.Fragment key={crumb.label}>
-                {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-slate-300" />}
+                {idx > 0 && <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />}
                 {crumb.view ? (
                   <button
                     onClick={() => setCurrentView(crumb.view!)}
-                    className="hover:text-brand-600 transition-colors font-medium"
+                    className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors font-medium"
                   >
                     {crumb.label}
                   </button>
                 ) : (
-                  <span className="font-semibold text-slate-800">{crumb.label}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{crumb.label}</span>
                 )}
               </React.Fragment>
             ))}
