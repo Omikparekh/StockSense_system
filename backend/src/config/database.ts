@@ -28,18 +28,28 @@ class DatabaseClient {
       this.sqliteDb = new Database(dbPath);
       this.sqliteDb.pragma('journal_mode = WAL');
       this.sqliteDb.pragma('foreign_keys = ON');
+      this.sqliteDb.pragma('busy_timeout = 5000');
     }
+  }
+
+  private formatSqlite(sql: string, params: any[]): { sql: string; params: any[] } {
+    const mappedParams: any[] = [];
+    const sqliteSql = sql.replace(/\$(\d+)/g, (_, idx) => {
+      const paramIndex = parseInt(idx, 10) - 1;
+      mappedParams.push(params[paramIndex]);
+      return '?';
+    });
+    return { sql: sqliteSql, params: mappedParams };
   }
 
   public async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
     if (this.engine === 'sqlite' && this.sqliteDb) {
-      // In SQLite, convert $1, $2 to ?
-      const sqliteSql = sql.replace(/\$(\d+)/g, '?');
+      const { sql: sqliteSql, params: mappedParams } = this.formatSqlite(sql, params);
       const stmt = this.sqliteDb.prepare(sqliteSql);
       if (sqliteSql.trim().toUpperCase().startsWith('SELECT') || sqliteSql.includes('RETURNING')) {
-        return stmt.all(...params) as T[];
+        return stmt.all(...mappedParams) as T[];
       } else {
-        const info = stmt.run(...params);
+        const info = stmt.run(...mappedParams);
         return [{ changes: info.changes, lastInsertRowid: info.lastInsertRowid }] as any;
       }
     } else if (this.pgPool) {
@@ -56,8 +66,8 @@ class DatabaseClient {
 
   public async execute(sql: string, params: any[] = []): Promise<any> {
     if (this.engine === 'sqlite' && this.sqliteDb) {
-      const sqliteSql = sql.replace(/\$(\d+)/g, '?');
-      return this.sqliteDb.prepare(sqliteSql).run(...params);
+      const { sql: sqliteSql, params: mappedParams } = this.formatSqlite(sql, params);
+      return this.sqliteDb.prepare(sqliteSql).run(...mappedParams);
     } else if (this.pgPool) {
       return await this.pgPool.query(sql, params);
     }
@@ -152,11 +162,73 @@ class DatabaseClient {
         user_name VARCHAR(255),
         notes TEXT,
         created_at ${timestampDefault}
+      );`,
+
+      // OTP Verification Codes table
+      `CREATE TABLE IF NOT EXISTS otps (
+        id ${autoInc},
+        email VARCHAR(255) NOT NULL,
+        otp_code VARCHAR(10) NOT NULL,
+        purpose VARCHAR(50) NOT NULL,
+        expires_at ${timestampDefault},
+        used BOOLEAN DEFAULT FALSE,
+        created_at ${timestampDefault}
       );`
     ];
 
     for (const statement of schemaStatements) {
       await this.execute(statement);
+    }
+
+    await this.seedInitialData();
+  }
+
+  private async seedInitialData(): Promise<void> {
+    try {
+      // Check if admin user exists by login_id or email
+      const existingUser = await this.queryOne(
+        'SELECT id FROM users WHERE login_id = $1 OR email = $2',
+        ['admin', 'admin@stocksense.io']
+      );
+      if (!existingUser) {
+        const { hashPassword } = await import('../core/security.js');
+        const defaultHash = await hashPassword('AdminPassword123!');
+        await this.execute(
+          `INSERT INTO users (login_id, email, name, password_hash, role, is_active)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          ['admin', 'admin@stocksense.io', 'Administrator', defaultHash, 'admin', 1]
+        );
+        console.log('[Database] Seeded initial admin user (admin / AdminPassword123!)');
+      }
+
+      // Check if default warehouse exists
+      const existingWh = await this.queryOne('SELECT id FROM warehouses WHERE short_code = $1', ['WH']);
+      if (!existingWh) {
+        const whRes = await this.execute(
+          `INSERT INTO warehouses (name, short_code, address) VALUES ($1, $2, $3)`,
+          ['Main Warehouse', 'WH', 'Building 4, Industrial Logistics Zone']
+        );
+        const whId = whRes.lastInsertRowid || 1;
+
+        // Check and create default locations under WH
+        const existingStock = await this.queryOne('SELECT id FROM locations WHERE path = $1', ['WH/Stock']);
+        if (!existingStock) {
+          await this.execute(
+            `INSERT INTO locations (warehouse_id, name, short_code, path) VALUES ($1, $2, $3, $4)`,
+            [whId, 'Central Stock', 'Stock', 'WH/Stock']
+          );
+        }
+        const existingOutput = await this.queryOne('SELECT id FROM locations WHERE path = $1', ['WH/Output']);
+        if (!existingOutput) {
+          await this.execute(
+            `INSERT INTO locations (warehouse_id, name, short_code, path) VALUES ($1, $2, $3, $4)`,
+            [whId, 'Dispatch Output', 'Output', 'WH/Output']
+          );
+        }
+        console.log('[Database] Seeded default warehouse (WH) and locations (WH/Stock, WH/Output)');
+      }
+    } catch (err) {
+      console.warn('[Database] Seeding notice:', err);
     }
   }
 

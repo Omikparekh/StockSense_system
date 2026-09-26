@@ -1,45 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from './components/ui/Button';
+import React, { useState } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { LoginCard } from './components/auth/LoginCard';
+import { SignupCard } from './components/auth/SignupCard';
+import { OtpVerificationModal } from './components/auth/OtpVerificationModal';
+import { ForgotPasswordModal } from './components/auth/ForgotPasswordModal';
 import { Badge } from './components/ui/Badge';
 import { Card } from './components/ui/Card';
-import { api } from './services/api';
-import { ApiHealthResponse } from './types';
+import { Button } from './components/ui/Button';
 import {
   Boxes,
-  CheckCircle2,
-  AlertCircle,
+  LogOut,
+  ShieldCheck,
   PackagePlus,
+  Truck,
   ArrowRightLeft,
-  Layers,
-  Sparkles,
+  Warehouse,
 } from 'lucide-react';
 
-export const App: React.FC = () => {
-  const [health, setHealth] = useState<ApiHealthResponse | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchHealth = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await api.checkHealth();
-      setHealth(data);
-    } catch (err: any) {
-      setError(err.message || 'Backend not connected yet');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchHealth();
-  }, []);
+const AuthenticatedDashboard: React.FC = () => {
+  const { user, logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
@@ -49,155 +33,191 @@ export const App: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg tracking-tight text-slate-900">StockSense</span>
                 <span className="px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase bg-brand-50 text-brand-700 border border-brand-200 rounded">
-                  Phase 1 — Foundation
+                  Phase 2 — Auth & Roles
                 </span>
               </div>
-              <p className="text-xs text-slate-500">Modern Inventory Management System</p>
+              <p className="text-xs text-slate-500">Centralized SaaS Inventory Platform</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {loading ? (
-              <Badge variant="neutral" dot>Checking Backend...</Badge>
-            ) : health ? (
-              <Badge variant="done" dot>Backend Online ({health.database})</Badge>
-            ) : (
-              <Badge variant="waiting" dot>Backend Standby</Badge>
-            )}
-            <Button size="sm" variant="outline" onClick={fetchHealth} isLoading={loading}>
-              Check Connection
-            </Button>
+          {/* User profile & actions */}
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-lg text-xs">
+              <Warehouse className="w-3.5 h-3.5 text-slate-500" />
+              <span className="text-slate-600 font-medium">Main Warehouse (WH)</span>
+            </div>
+
+            <div className="flex items-center gap-3 border-l border-slate-200 pl-4">
+              <div className="w-8 h-8 rounded-full bg-brand-100 border border-brand-200 flex items-center justify-center text-brand-700 font-bold text-xs">
+                {user?.name ? user.name[0].toUpperCase() : 'U'}
+              </div>
+              <div className="hidden md:block text-left text-xs">
+                <div className="font-semibold text-slate-900 leading-tight">{user?.name}</div>
+                <div className="text-[11px] font-mono text-brand-600 capitalize">
+                  {user?.role.replace('_', ' ')}
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={logout}
+                className="text-slate-500 hover:text-rose-600"
+                title="Sign out"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-        {/* Hero Banner */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-8 shadow-card relative overflow-hidden">
-          <div className="max-w-2xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
-              <Sparkles className="w-3.5 h-3.5 text-brand-600" />
-              <span>ERP-Grade Architecture & Design Token System</span>
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Welcome Banner */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Authenticated Session Active</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-              High-Precision Stock Flow & Auditable Ledger
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Good morning, {user?.name}
             </h1>
-            <p className="text-base text-slate-600 leading-relaxed">
-              StockSense is built strictly according to your wireframe architecture diagram:
-              featuring deterministic sequence codes (<code className="font-mono text-brand-700 bg-brand-50 px-1 py-0.5 rounded text-xs font-semibold">WH/IN/00001</code>, <code className="font-mono text-brand-700 bg-brand-50 px-1 py-0.5 rounded text-xs font-semibold">WH/OUT/00001</code>), 
-              automatic stock availability checking (<code className="font-mono text-amber-700 bg-amber-50 px-1 py-0.5 rounded text-xs font-semibold">Waiting</code> / <code className="font-mono text-indigo-700 bg-indigo-50 px-1 py-0.5 rounded text-xs font-semibold">Ready</code>), and direct in-table stock reconciliation.
+            <p className="text-sm text-slate-600">
+              Here is what is happening with your warehouse inventory today.
             </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Badge variant="ready" dot>
+              Role: {user?.role.replace('_', ' ').toUpperCase()}
+            </Badge>
           </div>
         </div>
 
-        {/* Design System Preview */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">Phase 1 Design System Tokens</h2>
-              <p className="text-xs text-slate-500">Centralized UI components, responsive typography, and operational state tokens.</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Operational States Badge Preview */}
-            <Card className="space-y-4">
-              <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
-                <Layers className="w-4 h-4 text-brand-600" />
-                <h3>Diagram State Machine Tokens</h3>
-              </div>
-              <p className="text-xs text-slate-500">Accurate to the wireframe workflow states:</p>
-              <div className="flex flex-wrap gap-2 pt-1">
-                <Badge variant="draft" dot>Draft</Badge>
-                <Badge variant="waiting" dot>Waiting</Badge>
-                <Badge variant="ready" dot>Ready</Badge>
-                <Badge variant="done" dot>Done</Badge>
-                <Badge variant="cancelled" dot>Cancelled</Badge>
-              </div>
-            </Card>
-
-            {/* Sequence Code Engine Preview */}
-            <Card className="space-y-4">
-              <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
+        {/* Operational Flow Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm">
                 <PackagePlus className="w-4 h-4 text-emerald-600" />
-                <h3>Sequence Numbering Patterns</h3>
+                <h3>Receipts (Inbound)</h3>
               </div>
-              <p className="text-xs text-slate-500">[Warehouse] / [Operation] / [Sequence]:</p>
-              <div className="space-y-2 text-xs font-mono">
-                <div className="flex items-center justify-between bg-slate-50 p-2 rounded border border-slate-200">
-                  <span className="text-slate-600">Receipts</span>
-                  <span className="font-semibold text-emerald-700">WH/IN/00001</span>
-                </div>
-                <div className="flex items-center justify-between bg-slate-50 p-2 rounded border border-slate-200">
-                  <span className="text-slate-600">Deliveries</span>
-                  <span className="font-semibold text-indigo-700">WH/OUT/00001</span>
-                </div>
-                <div className="flex items-center justify-between bg-slate-50 p-2 rounded border border-slate-200">
-                  <span className="text-slate-600">Transfers</span>
-                  <span className="font-semibold text-amber-700">WH/INT/00001</span>
-                </div>
-              </div>
-            </Card>
-
-            {/* In-Table Reconciliation Preview */}
-            <Card className="space-y-4">
-              <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
-                <ArrowRightLeft className="w-4 h-4 text-amber-600" />
-                <h3>Stock Reconciliation Trigger</h3>
-              </div>
-              <p className="text-xs text-slate-500">Live difference calculator:</p>
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1.5 text-xs">
-                <div className="flex justify-between text-slate-600">
-                  <span>Recorded System Stock:</span>
-                  <span className="font-bold">100 units</span>
-                </div>
-                <div className="flex justify-between text-slate-600">
-                  <span>Physical Stock Count:</span>
-                  <span className="font-bold">97 units</span>
-                </div>
-                <div className="flex justify-between text-rose-600 font-bold border-t border-slate-200 pt-1.5">
-                  <span>Difference:</span>
-                  <span>-3 units (Audited)</span>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </section>
-
-        {/* Backend Connection Status Section */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-bold text-slate-900">Backend & Database Infrastructure</h2>
-          <Card>
-            {loading ? (
-              <div className="py-6 text-center text-slate-500 text-sm">
-                Connecting to backend API...
-              </div>
-            ) : health ? (
-              <div className="flex items-center gap-4 text-emerald-700 bg-emerald-50/60 p-4 rounded-xl border border-emerald-200">
-                <CheckCircle2 className="w-6 h-6 flex-shrink-0 text-emerald-600" />
-                <div className="text-sm">
-                  <p className="font-semibold">Backend Connected & Fully Healthy</p>
-                  <p className="text-xs text-emerald-600">
-                    Version: {health.version} | Database Engine: {health.database} | Timestamp: {health.timestamp}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-4 text-amber-800 bg-amber-50/60 p-4 rounded-xl border border-amber-200">
-                <AlertCircle className="w-6 h-6 flex-shrink-0 text-amber-600" />
-                <div className="text-sm">
-                  <p className="font-semibold">FastAPI Backend Standby</p>
-                  <p className="text-xs text-amber-700">
-                    {error || 'Backend will respond once started via uvicorn app.main:app --reload'}
-                  </p>
-                </div>
-              </div>
-            )}
+              <Badge variant="ready">WH/IN/00001</Badge>
+            </div>
+            <p className="text-xs text-slate-500">
+              Vendor delivery acceptance with atomic inventory increments and move ledger updates.
+            </p>
           </Card>
-        </section>
+
+          <Card className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm">
+                <Truck className="w-4 h-4 text-indigo-600" />
+                <h3>Deliveries (Outbound)</h3>
+              </div>
+              <Badge variant="waiting">WH/OUT/00001</Badge>
+            </div>
+            <p className="text-xs text-slate-500">
+              Customer dispatch with automated stock availability checks (Ready vs Waiting).
+            </p>
+          </Card>
+
+          <Card className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm">
+                <ArrowRightLeft className="w-4 h-4 text-amber-600" />
+                <h3>Internal Transfers</h3>
+              </div>
+              <Badge variant="neutral">WH/INT/00001</Badge>
+            </div>
+            <p className="text-xs text-slate-500">
+              Location-to-location shifting (e.g. WH/Stock to WH/Production) with net company neutrality.
+            </p>
+          </Card>
+        </div>
       </main>
     </div>
+  );
+};
+
+const AuthScreen: React.FC = () => {
+  const [view, setView] = useState<'login' | 'signup'>('login');
+  const [otpModalOpen, setOtpModalOpen] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [devOtp, setDevOtp] = useState<string | undefined>(undefined);
+
+  const handleOtpRequired = (email: string, devOtpCode?: string) => {
+    setPendingEmail(email);
+    setDevOtp(devOtpCode);
+    setOtpModalOpen(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8">
+      {/* Background ambient glow */}
+      <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/50 via-slate-50 to-slate-50 pointer-events-none" />
+
+      <div className="relative z-10 w-full flex flex-col items-center">
+        {view === 'login' ? (
+          <LoginCard
+            onSwitchToSignup={() => setView('signup')}
+            onOpenForgotPassword={() => setForgotPasswordOpen(true)}
+          />
+        ) : (
+          <SignupCard
+            onSwitchToLogin={() => setView('login')}
+            onOtpRequired={handleOtpRequired}
+          />
+        )}
+      </div>
+
+      {/* OTP Verification Modal */}
+      <OtpVerificationModal
+        email={pendingEmail}
+        purpose="signup"
+        devOtpCode={devOtp}
+        isOpen={otpModalOpen}
+        onClose={() => setOtpModalOpen(false)}
+      />
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isOpen={forgotPasswordOpen}
+        onClose={() => setForgotPasswordOpen(false)}
+        onSuccess={() => setView('login')}
+      />
+    </div>
+  );
+};
+
+export const AppContent: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 rounded-xl bg-brand-600 text-white flex items-center justify-center mx-auto shadow-md animate-pulse">
+            <Boxes className="w-6 h-6" />
+          </div>
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Loading StockSense...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return isAuthenticated ? <AuthenticatedDashboard /> : <AuthScreen />;
+};
+
+export const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 
