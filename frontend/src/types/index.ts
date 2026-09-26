@@ -28,6 +28,9 @@ export interface Product {
   uom: string;
   per_unit_weight: number;
   reorder_level: number;
+  unit_cost: number;
+  image_url?: string | null;
+  image_url_2?: string | null;
   created_at?: string;
 }
 
@@ -36,6 +39,7 @@ export interface ProductWithStock extends Product {
   reserved: number;
   free_stock: number;
   stock_status: StockHealthStatus;
+  total_value?: number;
 }
 
 export interface LocationStock {
@@ -93,7 +97,30 @@ export interface LocationItem {
   path: string;
   total_on_hand: number;
   distinct_products: number;
+  total_valuation?: number;
   created_at?: string;
+}
+
+export interface WarehouseInventoryItem {
+  productId: number;
+  productName: string;
+  sku: string;
+  category: string;
+  uom: string;
+  unitCost: number;
+  imageUrl?: string | null;
+  imageUrl2?: string | null;
+  locationId: number;
+  locationName: string;
+  locationPath: string;
+  onHand: number;
+  reserved: number;
+  totalValuation: number;
+}
+
+export interface WarehouseInventoryApiResponse {
+  success: boolean;
+  data: WarehouseInventoryItem[];
 }
 
 export interface Warehouse {
@@ -102,6 +129,7 @@ export interface Warehouse {
   short_code: string;
   address: string;
   total_on_hand: number;
+  total_valuation?: number;
   locations: LocationItem[];
   created_at?: string;
 }

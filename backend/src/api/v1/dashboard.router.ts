@@ -26,6 +26,7 @@ export interface DashboardKPIs {
   inventory: {
     total_products: number;
     total_units: number;
+    total_valuation: number;
     in_stock_count: number;
     low_stock_count: number;
     out_of_stock_count: number;
@@ -37,17 +38,23 @@ export interface DashboardKPIs {
 /**
  * GET /api/v1/dashboard/kpis
  * Fetch operational dashboard metrics, status counters, and real-time activity stream.
+ * Supports warehouse_id filtering for rapid multi-warehouse switching.
  */
 dashboardRouter.get(
   '/kpis',
   authMiddleware,
-  asyncHandler(async (_req: AuthenticatedRequest, res: Response) => {
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const todayStr = new Date().toISOString().slice(0, 10);
+    const warehouseId = req.query.warehouse_id ? Number(req.query.warehouse_id) : null;
 
     // 1. Inbound Receipts counts
-    const receiptsAll = await db.query<any>(
-      "SELECT scheduled_date, status FROM operations WHERE operation_type = 'IN'"
-    );
+    let receiptsQuery = "SELECT scheduled_date, status FROM operations WHERE operation_type = 'IN'";
+    const receiptsParams: any[] = [];
+    if (warehouseId) {
+      receiptsQuery += " AND warehouse_id = $1";
+      receiptsParams.push(warehouseId);
+    }
+    const receiptsAll = await db.query<any>(receiptsQuery, receiptsParams);
     let receiptsToReceive = 0;
     let receiptsLate = 0;
     let receiptsToday = 0;
@@ -68,9 +75,13 @@ dashboardRouter.get(
     }
 
     // 2. Outbound Deliveries counts
-    const deliveriesAll = await db.query<any>(
-      "SELECT scheduled_date, status FROM operations WHERE operation_type = 'OUT'"
-    );
+    let deliveriesQuery = "SELECT scheduled_date, status FROM operations WHERE operation_type = 'OUT'";
+    const deliveriesParams: any[] = [];
+    if (warehouseId) {
+      deliveriesQuery += " AND warehouse_id = $1";
+      deliveriesParams.push(warehouseId);
+    }
+    const deliveriesAll = await db.query<any>(deliveriesQuery, deliveriesParams);
     let deliveriesToDeliver = 0;
     let deliveriesLate = 0;
     let deliveriesWaiting = 0;
@@ -91,9 +102,13 @@ dashboardRouter.get(
     }
 
     // 3. Internal Transfers counts
-    const transfersAll = await db.query<any>(
-      "SELECT status FROM operations WHERE operation_type = 'INT'"
-    );
+    let transfersQuery = "SELECT status FROM operations WHERE operation_type = 'INT'";
+    const transfersParams: any[] = [];
+    if (warehouseId) {
+      transfersQuery += " AND warehouse_id = $1";
+      transfersParams.push(warehouseId);
+    }
+    const transfersAll = await db.query<any>(transfersQuery, transfersParams);
     let transfersInProgress = 0;
     let transfersDone = 0;
     for (const t of transfersAll) {
@@ -104,19 +119,34 @@ dashboardRouter.get(
       }
     }
 
-    // 4. Inventory Health & Totals
-    const productStats = await db.query<any>(`
+    // 4. Inventory Health, Totals & Valuation
+    let productStatsQuery = `
       SELECT 
         p.id,
         p.reorder_level,
+        p.category,
+        COALESCE(p.unit_cost, 0) AS unit_cost,
         COALESCE(SUM(s.on_hand), 0) AS total_on_hand
       FROM products p
-      LEFT JOIN stock_levels s ON p.id = s.product_id
-      GROUP BY p.id, p.reorder_level
-    `);
+    `;
+
+    if (warehouseId) {
+      productStatsQuery += `
+        LEFT JOIN locations loc ON loc.warehouse_id = ${warehouseId}
+        LEFT JOIN stock_levels s ON p.id = s.product_id AND s.location_id = loc.id
+      `;
+    } else {
+      productStatsQuery += `
+        LEFT JOIN stock_levels s ON p.id = s.product_id
+      `;
+    }
+    productStatsQuery += ` GROUP BY p.id, p.reorder_level, p.category, p.unit_cost`;
+
+    const productStats = await db.query<any>(productStatsQuery);
 
     let totalProducts = productStats.length;
     let totalUnits = 0;
+    let totalValuation = 0;
     let inStockCount = 0;
     let lowStockCount = 0;
     let outOfStockCount = 0;
@@ -124,7 +154,10 @@ dashboardRouter.get(
     for (const p of productStats) {
       const onHand = Number(p.total_on_hand) || 0;
       const reorderLevel = Number(p.reorder_level) || 0;
+      const rawCost = Number(p.unit_cost);
+      const unitCost = rawCost > 0 ? rawCost : 25.0; // fallback approx
       totalUnits += onHand;
+      totalValuation += onHand * unitCost;
 
       if (onHand <= 0) {
         outOfStockCount++;
@@ -135,8 +168,8 @@ dashboardRouter.get(
       }
     }
 
-    // 5. Recent 5 Operations
-    const recentOperations = await db.query<any>(`
+    // 5. Recent 5 Operations (scoped to warehouse if specified)
+    let opsQuery = `
       SELECT 
         op.id,
         op.reference,
@@ -147,9 +180,15 @@ dashboardRouter.get(
         w.name AS warehouse_name
       FROM operations op
       LEFT JOIN warehouses w ON op.warehouse_id = w.id
-      ORDER BY op.id DESC
-      LIMIT 5
-    `);
+    `;
+    const opsParams: any[] = [];
+    if (warehouseId) {
+      opsQuery += ` WHERE op.warehouse_id = $1`;
+      opsParams.push(warehouseId);
+    }
+    opsQuery += ` ORDER BY op.id DESC LIMIT 5`;
+
+    const recentOperations = await db.query<any>(opsQuery, opsParams);
 
     // 6. Recent 5 Stock Moves (Ledger)
     const recentStockMoves = await db.query<any>(`
@@ -191,6 +230,7 @@ dashboardRouter.get(
       inventory: {
         total_products: totalProducts,
         total_units: Math.round(totalUnits * 100) / 100,
+        total_valuation: Math.round(totalValuation * 100) / 100,
         in_stock_count: inStockCount,
         low_stock_count: lowStockCount,
         out_of_stock_count: outOfStockCount

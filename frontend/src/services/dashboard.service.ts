@@ -21,6 +21,7 @@ export interface DashboardKPIs {
   inventory: {
     total_products: number;
     total_units: number;
+    total_valuation?: number;
     in_stock_count: number;
     low_stock_count: number;
     out_of_stock_count: number;
@@ -54,7 +55,8 @@ export interface DashboardResponse {
 }
 
 export const dashboardService = {
-  fetchDashboardKPIs: async (): Promise<DashboardResponse> => {
-    return api.get<DashboardResponse>('/dashboard/kpis');
+  fetchDashboardKPIs: async (warehouseId?: number | null): Promise<DashboardResponse> => {
+    const query = warehouseId ? `?warehouse_id=${warehouseId}` : '';
+    return api.get<DashboardResponse>(`/dashboard/kpis${query}`);
   }
 };

@@ -26,6 +26,9 @@ export interface Product {
   uom: string;
   per_unit_weight: number;
   reorder_level: number;
+  unit_cost: number;
+  image_url?: string | null;
+  image_url_2?: string | null;
   created_at?: string;
 }
 
@@ -34,6 +37,7 @@ export interface ProductWithStock extends Product {
   reserved: number;
   free_stock: number;
   stock_status: 'in_stock' | 'low_stock' | 'out_of_stock';
+  total_value: number;
 }
 
 export interface LocationStock {

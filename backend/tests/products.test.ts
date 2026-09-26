@@ -218,4 +218,51 @@ describe('Products & Stock Reconciliation Endpoints', () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toContain('stock on hand');
   });
+
+  it('POST /api/v1/products should support 2 photos, unit_cost and compute total_value', async () => {
+    const res = await request(app)
+      .post('/api/v1/products')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Optical Sensor 4K',
+        sku: 'OPT-SNS-4K',
+        category: 'Hardware',
+        uom: 'Units',
+        per_unit_weight: 0.15,
+        reorder_level: 5,
+        unit_cost: 89.99,
+        image_url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400',
+        image_url_2: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=400',
+        initial_stock: 10
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.unit_cost).toBe(89.99);
+    expect(res.body.data.image_url).toContain('photo-1518770660439');
+    expect(res.body.data.image_url_2).toContain('photo-1581092335397');
+
+    const detail = await request(app).get(`/api/v1/products/${res.body.data.id}`);
+    expect(detail.status).toBe(200);
+    expect(detail.body.data.product.unit_cost).toBe(89.99);
+    expect(detail.body.data.product.total_value).toBe(899.9);
+    expect(detail.body.data.product.image_url).toBeDefined();
+    expect(detail.body.data.product.image_url_2).toBeDefined();
+
+    // Clean up
+    await db.execute("DELETE FROM stock_history WHERE product_id = $1", [res.body.data.id]);
+    await db.execute("DELETE FROM stock_levels WHERE product_id = $1", [res.body.data.id]);
+    await db.execute("DELETE FROM products WHERE id = $1", [res.body.data.id]);
+  });
+
+  it('GET /api/v1/warehouses/:id/inventory should return live product inventory with valuations', async () => {
+    const res = await request(app).get('/api/v1/warehouses/1/inventory');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(res.body.data[0].totalValuation).toBeGreaterThanOrEqual(0);
+    expect(res.body.data[0].productName).toBeDefined();
+  });
 });

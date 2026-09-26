@@ -46,7 +46,7 @@ class DatabaseClient {
     if (this.engine === 'sqlite' && this.sqliteDb) {
       const { sql: sqliteSql, params: mappedParams } = this.formatSqlite(sql, params);
       const stmt = this.sqliteDb.prepare(sqliteSql);
-      if (sqliteSql.trim().toUpperCase().startsWith('SELECT') || sqliteSql.includes('RETURNING')) {
+      if (sqliteSql.trim().toUpperCase().startsWith('SELECT') || sqliteSql.trim().toUpperCase().startsWith('PRAGMA') || sqliteSql.includes('RETURNING')) {
         return stmt.all(...mappedParams) as T[];
       } else {
         const info = stmt.run(...mappedParams);
@@ -135,6 +135,9 @@ class DatabaseClient {
         uom VARCHAR(50) NOT NULL DEFAULT 'Units',
         per_unit_weight NUMERIC(10, 2) DEFAULT 0,
         reorder_level NUMERIC(10, 2) DEFAULT 10,
+        unit_cost NUMERIC(10, 2) DEFAULT 0.00,
+        image_url TEXT,
+        image_url_2 TEXT,
         created_at ${timestampDefault}
       );`,
 
@@ -231,6 +234,28 @@ class DatabaseClient {
       await this.execute(statement);
     }
 
+    // Migration checks for existing databases
+    try {
+      if (isSqlite) {
+        const prodCols = (await this.query<{ name: string }>('PRAGMA table_info(products)')).map(c => c.name);
+        if (!prodCols.includes('unit_cost')) {
+          try { await this.execute('ALTER TABLE products ADD COLUMN unit_cost NUMERIC(10, 2) DEFAULT 0.00'); } catch {}
+        }
+        if (!prodCols.includes('image_url')) {
+          try { await this.execute('ALTER TABLE products ADD COLUMN image_url TEXT'); } catch {}
+        }
+        if (!prodCols.includes('image_url_2')) {
+          try { await this.execute('ALTER TABLE products ADD COLUMN image_url_2 TEXT'); } catch {}
+        }
+      } else {
+        try { await this.execute('ALTER TABLE products ADD COLUMN IF NOT EXISTS unit_cost NUMERIC(10, 2) DEFAULT 0.00'); } catch {}
+        try { await this.execute('ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url TEXT'); } catch {}
+        try { await this.execute('ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url_2 TEXT'); } catch {}
+      }
+    } catch (migErr) {
+      console.warn('[Database] Column migration notice:', migErr);
+    }
+
     await this.seedInitialData();
   }
 
@@ -280,25 +305,91 @@ class DatabaseClient {
       }
 
       // Check and seed demo products
+      const demoProducts = [
+        { 
+          name: 'Steel Rods', 
+          sku: 'STL-ROD-01', 
+          category: 'Raw Materials', 
+          uom: 'kg', 
+          weight: 100.0, 
+          reorder: 15.0, 
+          onHand: 50.0,
+          unitCost: 45.50,
+          imageUrl: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80',
+          imageUrl2: 'https://images.unsplash.com/photo-1535813547-99c456a41d4a?auto=format&fit=crop&w=600&q=80'
+        },
+        { 
+          name: 'Office Chairs', 
+          sku: 'CHR-OFF-02', 
+          category: 'Furniture', 
+          uom: 'Units', 
+          weight: 15.0, 
+          reorder: 20.0, 
+          onHand: 70.0,
+          unitCost: 120.00,
+          imageUrl: 'https://images.unsplash.com/photo-1580481077195-c266f8e7b165?auto=format&fit=crop&w=600&q=80',
+          imageUrl2: 'https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&w=600&q=80'
+        },
+        { 
+          name: 'Industrial Bolts', 
+          sku: 'BLT-IND-03', 
+          category: 'Hardware', 
+          uom: 'Units', 
+          weight: 0.2, 
+          reorder: 200.0, 
+          onHand: 1200.0,
+          unitCost: 0.85,
+          imageUrl: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80',
+          imageUrl2: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80'
+        },
+        { 
+          name: 'Aluminum Sheets', 
+          sku: 'ALM-SHT-04', 
+          category: 'Raw Materials', 
+          uom: 'kg', 
+          weight: 25.0, 
+          reorder: 10.0, 
+          onHand: 8.0,
+          unitCost: 65.00,
+          imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80',
+          imageUrl2: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=600&q=80'
+        },
+        { 
+          name: 'Electric Motors', 
+          sku: 'MTR-ELC-06', 
+          category: 'Machinery', 
+          uom: 'Units', 
+          weight: 35.0, 
+          reorder: 5.0, 
+          onHand: 0.0,
+          unitCost: 210.00,
+          imageUrl: 'https://images.unsplash.com/photo-1581092162384-8987c1d64718?auto=format&fit=crop&w=600&q=80',
+          imageUrl2: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&w=600&q=80'
+        },
+        { 
+          name: 'Packaging Boxes', 
+          sku: 'BOX-PKG-07', 
+          category: 'Packaging', 
+          uom: 'Boxes', 
+          weight: 0.5, 
+          reorder: 50.0, 
+          onHand: 350.0,
+          unitCost: 4.25,
+          imageUrl: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=600&q=80',
+          imageUrl2: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80'
+        },
+      ];
+
       const existingProd = await this.queryOne('SELECT id FROM products LIMIT 1');
       if (!existingProd) {
         const stockLoc = await this.queryOne("SELECT id FROM locations WHERE path = 'WH/Stock'");
         const stockLocId = stockLoc ? stockLoc.id : 1;
 
-        const demoProducts = [
-          { name: 'Steel Rods', sku: 'STL-ROD-01', category: 'Raw Materials', uom: 'kg', weight: 100.0, reorder: 15.0, onHand: 50.0 },
-          { name: 'Office Chairs', sku: 'CHR-OFF-02', category: 'Furniture', uom: 'Units', weight: 15.0, reorder: 20.0, onHand: 70.0 },
-          { name: 'Industrial Bolts', sku: 'BLT-IND-03', category: 'Hardware', uom: 'Units', weight: 0.2, reorder: 200.0, onHand: 1200.0 },
-          { name: 'Aluminum Sheets', sku: 'ALM-SHT-04', category: 'Raw Materials', uom: 'kg', weight: 25.0, reorder: 10.0, onHand: 8.0 },
-          { name: 'Electric Motors', sku: 'MTR-ELC-06', category: 'Machinery', uom: 'Units', weight: 35.0, reorder: 5.0, onHand: 0.0 },
-          { name: 'Packaging Boxes', sku: 'BOX-PKG-07', category: 'Packaging', uom: 'Boxes', weight: 0.5, reorder: 50.0, onHand: 350.0 },
-        ];
-
         for (const p of demoProducts) {
           const prodRes = await this.execute(
-            `INSERT INTO products (name, sku, category, uom, per_unit_weight, reorder_level)
-             VALUES ($1, $2, $3, $4, $5, $6)`,
-            [p.name, p.sku, p.category, p.uom, p.weight, p.reorder]
+            `INSERT INTO products (name, sku, category, uom, per_unit_weight, reorder_level, unit_cost, image_url, image_url_2)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            [p.name, p.sku, p.category, p.uom, p.weight, p.reorder, p.unitCost, p.imageUrl, p.imageUrl2]
           );
           const prodId = prodRes.lastInsertRowid;
           if (prodId) {
@@ -309,7 +400,33 @@ class DatabaseClient {
             );
           }
         }
-        console.log('[Database] Seeded 6 realistic demo products with initial stock balances.');
+        console.log('[Database] Seeded 6 realistic demo products with initial stock balances, unit costs & photos.');
+      } else {
+        // Backfill demo products if they are missing costs or images
+        for (const p of demoProducts) {
+          await this.execute(
+            `UPDATE products 
+             SET unit_cost = CASE WHEN (unit_cost IS NULL OR unit_cost = 0) THEN $1 ELSE unit_cost END,
+                 image_url = CASE WHEN (image_url IS NULL OR image_url = '') THEN $2 ELSE image_url END,
+                 image_url_2 = CASE WHEN (image_url_2 IS NULL OR image_url_2 = '') THEN $3 ELSE image_url_2 END
+             WHERE sku = $4`,
+            [p.unitCost, p.imageUrl, p.imageUrl2, p.sku]
+          );
+        }
+
+        // Approximate cost backfill for any other products without cost
+        await this.execute(`
+          UPDATE products
+          SET unit_cost = CASE 
+            WHEN category = 'Machinery' THEN 195.00
+            WHEN category = 'Furniture' THEN 110.00
+            WHEN category = 'Raw Materials' THEN 52.00
+            WHEN category = 'Hardware' THEN 8.50
+            WHEN category = 'Packaging' THEN 3.75
+            ELSE 25.00
+          END
+          WHERE unit_cost IS NULL OR unit_cost = 0
+        `);
       }
 
       // Check and seed demo operations

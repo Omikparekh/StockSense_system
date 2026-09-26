@@ -9,6 +9,23 @@ import { ProductWithStock, LocationStock } from '../../types/index.js';
 
 const productsRouter = Router();
 
+export function getApproximateCost(category: string): number {
+  switch (category) {
+    case 'Machinery':
+      return 210.00;
+    case 'Furniture':
+      return 120.00;
+    case 'Raw Materials':
+      return 45.50;
+    case 'Hardware':
+      return 0.85;
+    case 'Packaging':
+      return 4.25;
+    default:
+      return 25.00;
+  }
+}
+
 const createProductSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(255),
   sku: z.string().min(2, 'SKU must be at least 2 characters').max(100),
@@ -16,6 +33,9 @@ const createProductSchema = z.object({
   uom: z.string().min(1, 'Unit of measure is required').default('Units'),
   per_unit_weight: z.number().min(0, 'Weight must be non-negative').default(0),
   reorder_level: z.number().min(0, 'Reorder level must be non-negative').default(10),
+  unit_cost: z.number().min(0, 'Unit cost must be non-negative').optional().default(0),
+  image_url: z.string().nullable().optional(),
+  image_url_2: z.string().nullable().optional(),
   initial_stock: z.number().min(0, 'Initial stock must be non-negative').optional().default(0),
   location_id: z.number().optional()
 });
@@ -26,7 +46,10 @@ const updateProductSchema = z.object({
   category: z.string().min(1).max(100).optional(),
   uom: z.string().min(1).max(50).optional(),
   per_unit_weight: z.number().min(0).optional(),
-  reorder_level: z.number().min(0).optional()
+  reorder_level: z.number().min(0).optional(),
+  unit_cost: z.number().min(0).optional(),
+  image_url: z.string().nullable().optional(),
+  image_url_2: z.string().nullable().optional()
 });
 
 const adjustStockSchema = z.object({
@@ -61,6 +84,9 @@ productsRouter.get(
         p.uom,
         p.per_unit_weight,
         p.reorder_level,
+        p.unit_cost,
+        p.image_url,
+        p.image_url_2,
         p.created_at,
         COALESCE(SUM(sl.on_hand), 0) AS on_hand,
         COALESCE(SUM(sl.reserved), 0) AS reserved
@@ -86,18 +112,21 @@ productsRouter.get(
     }
 
     query += `
-      GROUP BY p.id, p.name, p.sku, p.category, p.uom, p.per_unit_weight, p.reorder_level, p.created_at
+      GROUP BY p.id, p.name, p.sku, p.category, p.uom, p.per_unit_weight, p.reorder_level, p.unit_cost, p.image_url, p.image_url_2, p.created_at
       ORDER BY p.name ASC
     `;
 
     const rows = await db.query<any>(query, params);
 
-    // Compute free stock and stock status
+    // Compute free stock, valuation, and stock status
     const allProducts: ProductWithStock[] = rows.map((r) => {
       const onHand = Number(r.on_hand) || 0;
       const reserved = Number(r.reserved) || 0;
       const freeStock = Math.max(0, onHand - reserved);
       const reorderLevel = Number(r.reorder_level) || 0;
+      const rawCost = Number(r.unit_cost);
+      const unitCost = rawCost > 0 ? rawCost : getApproximateCost(r.category);
+      const totalValue = Math.round(onHand * unitCost * 100) / 100;
 
       let stockStatus: 'in_stock' | 'low_stock' | 'out_of_stock' = 'in_stock';
       if (onHand <= 0) {
@@ -114,6 +143,10 @@ productsRouter.get(
         uom: r.uom,
         per_unit_weight: Number(r.per_unit_weight) || 0,
         reorder_level: reorderLevel,
+        unit_cost: unitCost,
+        image_url: r.image_url || null,
+        image_url_2: r.image_url_2 || null,
+        total_value: totalValue,
         created_at: r.created_at,
         on_hand: onHand,
         reserved: reserved,
@@ -225,6 +258,10 @@ productsRouter.get(
     });
 
     const reorderLevel = Number(product.reorder_level) || 0;
+    const rawCost = Number(product.unit_cost);
+    const unitCost = rawCost > 0 ? rawCost : getApproximateCost(product.category);
+    const totalValue = Math.round(totalOnHand * unitCost * 100) / 100;
+
     let stockStatus: 'in_stock' | 'low_stock' | 'out_of_stock' = 'in_stock';
     if (totalOnHand <= 0) {
       stockStatus = 'out_of_stock';
@@ -249,6 +286,10 @@ productsRouter.get(
           uom: product.uom,
           per_unit_weight: Number(product.per_unit_weight) || 0,
           reorder_level: reorderLevel,
+          unit_cost: unitCost,
+          image_url: product.image_url || null,
+          image_url_2: product.image_url_2 || null,
+          total_value: totalValue,
           created_at: product.created_at,
           on_hand: totalOnHand,
           reserved: totalReserved,
@@ -282,16 +323,21 @@ productsRouter.post(
       throw new AppError(`A product with SKU "${parsed.sku}" already exists.`, 409);
     }
 
+    const effectiveCost = (parsed.unit_cost && parsed.unit_cost > 0) ? parsed.unit_cost : getApproximateCost(parsed.category);
+
     const insertRes = await db.execute(
-      `INSERT INTO products (name, sku, category, uom, per_unit_weight, reorder_level)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
+      `INSERT INTO products (name, sku, category, uom, per_unit_weight, reorder_level, unit_cost, image_url, image_url_2)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
       [
         parsed.name.trim(),
         parsed.sku.trim().toUpperCase(),
         parsed.category.trim(),
         parsed.uom.trim(),
         parsed.per_unit_weight,
-        parsed.reorder_level
+        parsed.reorder_level,
+        effectiveCost,
+        parsed.image_url || null,
+        parsed.image_url_2 || null
       ]
     );
 
@@ -396,12 +442,15 @@ productsRouter.put(
     const updatedUom = parsed.uom !== undefined ? parsed.uom.trim() : existing.uom;
     const updatedWeight = parsed.per_unit_weight !== undefined ? parsed.per_unit_weight : existing.per_unit_weight;
     const updatedReorder = parsed.reorder_level !== undefined ? parsed.reorder_level : existing.reorder_level;
+    const updatedCost = parsed.unit_cost !== undefined ? parsed.unit_cost : existing.unit_cost;
+    const updatedImg1 = parsed.image_url !== undefined ? parsed.image_url : existing.image_url;
+    const updatedImg2 = parsed.image_url_2 !== undefined ? parsed.image_url_2 : existing.image_url_2;
 
     await db.execute(
       `UPDATE products 
-       SET name = $1, sku = $2, category = $3, uom = $4, per_unit_weight = $5, reorder_level = $6
-       WHERE id = $7`,
-      [updatedName, updatedSku, updatedCategory, updatedUom, updatedWeight, updatedReorder, productId]
+       SET name = $1, sku = $2, category = $3, uom = $4, per_unit_weight = $5, reorder_level = $6, unit_cost = $7, image_url = $8, image_url_2 = $9
+       WHERE id = $10`,
+      [updatedName, updatedSku, updatedCategory, updatedUom, updatedWeight, updatedReorder, updatedCost, updatedImg1, updatedImg2, productId]
     );
 
     const updated = await db.queryOne<any>('SELECT * FROM products WHERE id = $1', [productId]);

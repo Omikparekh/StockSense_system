@@ -28,6 +28,9 @@ describe('Internal Transfers Workflow Endpoints', () => {
 
     const prod = await db.queryOne<{ id: number }>("SELECT id FROM products WHERE sku = 'BOX-PKG-07'");
     testProductId = prod ? prod.id : 1;
+
+    // Ensure sufficient stock in WH/Stock for test transfer
+    await db.execute("UPDATE stock_levels SET on_hand = 350 WHERE product_id = $1 AND location_id = $2", [testProductId, stockLocId]);
   });
 
   it('GET /api/v1/transfers should return seeded transfers', async () => {

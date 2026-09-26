@@ -44,9 +44,11 @@ warehousesRouter.get(
         loc.path,
         loc.created_at,
         COALESCE(SUM(sl.on_hand), 0) AS total_on_hand,
-        COUNT(DISTINCT sl.product_id) AS distinct_products
+        COUNT(DISTINCT sl.product_id) AS distinct_products,
+        COALESCE(SUM(sl.on_hand * COALESCE(p.unit_cost, 0)), 0) AS total_valuation
        FROM locations loc
        LEFT JOIN stock_levels sl ON sl.location_id = loc.id
+       LEFT JOIN products p ON sl.product_id = p.id
        GROUP BY loc.id, loc.warehouse_id, loc.name, loc.short_code, loc.path, loc.created_at
        ORDER BY loc.path ASC`
     );
@@ -62,10 +64,12 @@ warehousesRouter.get(
           path: l.path,
           total_on_hand: Number(l.total_on_hand) || 0,
           distinct_products: Number(l.distinct_products) || 0,
+          total_valuation: Math.round((Number(l.total_valuation) || 0) * 100) / 100,
           created_at: l.created_at
         }));
 
       const totalWhOnHand = whLocations.reduce((sum, l) => sum + l.total_on_hand, 0);
+      const totalWhValuation = Math.round(whLocations.reduce((sum, l) => sum + (l.total_valuation || 0), 0) * 100) / 100;
 
       return {
         id: Number(wh.id),
@@ -74,6 +78,7 @@ warehousesRouter.get(
         address: wh.address || '',
         created_at: wh.created_at,
         total_on_hand: totalWhOnHand,
+        total_valuation: totalWhValuation,
         locations: whLocations
       };
     });
@@ -81,6 +86,69 @@ warehousesRouter.get(
     res.json({
       success: true,
       data: result
+    });
+  })
+);
+
+/**
+ * GET /api/v1/warehouses/:id/inventory
+ * List all products currently in stock in this warehouse with locations and valuations.
+ */
+warehousesRouter.get(
+  '/:id/inventory',
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const warehouseId = Number(req.params.id);
+    if (isNaN(warehouseId)) {
+      throw new AppError('Invalid warehouse ID', 400);
+    }
+
+    const rows = await db.query<any>(
+      `SELECT 
+        p.id AS product_id,
+        p.name AS product_name,
+        p.sku,
+        p.category,
+        p.uom,
+        COALESCE(p.unit_cost, 0) AS unit_cost,
+        p.image_url,
+        p.image_url_2,
+        loc.id AS location_id,
+        loc.name AS location_name,
+        loc.path AS location_path,
+        COALESCE(sl.on_hand, 0) AS on_hand,
+        COALESCE(sl.reserved, 0) AS reserved
+       FROM stock_levels sl
+       JOIN locations loc ON sl.location_id = loc.id
+       JOIN products p ON sl.product_id = p.id
+       WHERE loc.warehouse_id = $1 AND sl.on_hand > 0
+       ORDER BY p.name ASC, loc.path ASC`,
+      [warehouseId]
+    );
+
+    const items = rows.map(r => {
+      const onHand = Number(r.on_hand) || 0;
+      const unitCost = Number(r.unit_cost) || 25.0;
+      return {
+        productId: Number(r.product_id),
+        productName: r.product_name,
+        sku: r.sku,
+        category: r.category,
+        uom: r.uom,
+        unitCost,
+        imageUrl: r.image_url,
+        imageUrl2: r.image_url_2,
+        locationId: Number(r.location_id),
+        locationName: r.location_name,
+        locationPath: r.location_path,
+        onHand,
+        reserved: Number(r.reserved) || 0,
+        totalValuation: Math.round(onHand * unitCost * 100) / 100
+      };
+    });
+
+    res.json({
+      success: true,
+      data: items
     });
   })
 );
