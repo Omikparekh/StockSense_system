@@ -11,7 +11,26 @@ interface ProductFormModalProps {
   onSuccess: (savedProduct: any, isEdit: boolean) => void;
 }
 
-const COMMON_UOMS = ['Units', 'kg', 'g', 'Liters', 'Meters', 'Boxes', 'Pallets', 'Pieces', 'Packs'];
+const UOM_GROUPS = [
+  {
+    group: 'Discrete & Packaging',
+    units: ['Units', 'Pieces (pcs)', 'Boxes (box)', 'Cartons (ctn)', 'Packs (pk)', 'Pallets', 'Dozen (dz)', 'Sets', 'Pairs (pr)', 'Rolls', 'Bags', 'Bottles', 'Bundles', 'Barrels (bbl)']
+  },
+  {
+    group: 'Weight & Mass',
+    units: ['Kilograms (kg)', 'Grams (g)', 'Milligrams (mg)', 'Metric Tons (MT)', 'Pounds (lb)']
+  },
+  {
+    group: 'Volume & Liquid',
+    units: ['Liters (L)', 'Milliliters (mL)', 'Gallons (gal)']
+  },
+  {
+    group: 'Length & Area',
+    units: ['Meters (m)', 'Centimeters (cm)', 'Millimeters (mm)', 'Square Meters (sqm)']
+  }
+];
+
+const ALL_STANDARD_UOMS = UOM_GROUPS.flatMap(g => g.units);
 
 export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   product,
@@ -29,6 +48,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [category, setCategory] = useState('');
   const [customCategory, setCustomCategory] = useState('');
   const [uom, setUom] = useState('Units');
+  const [isCustomUom, setIsCustomUom] = useState(false);
+  const [customUom, setCustomUom] = useState('');
   const [perUnitWeight, setPerUnitWeight] = useState<number>(0);
   const [reorderLevel, setReorderLevel] = useState<number>(10);
   const [initialStock, setInitialStock] = useState<number>(0);
@@ -37,12 +58,24 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (product) {
-      setName(product.name);
-      setSku(product.sku);
-      setCategory(product.category);
+      setName(product.name || '');
+      setSku(product.sku || '');
+      setCategory(product.category || 'Raw Materials');
       setCustomCategory('');
-      setUom(product.uom);
+
+      if (ALL_STANDARD_UOMS.includes(product.uom)) {
+        setUom(product.uom);
+        setIsCustomUom(false);
+        setCustomUom('');
+      } else {
+        setUom('__CUSTOM__');
+        setIsCustomUom(true);
+        setCustomUom(product.uom || '');
+      }
+
       setPerUnitWeight(product.per_unit_weight || 0);
       setReorderLevel(product.reorder_level || 10);
       setInitialStock(0);
@@ -52,12 +85,16 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setCategory(categories[0] || 'Raw Materials');
       setCustomCategory('');
       setUom('Units');
+      setIsCustomUom(false);
+      setCustomUom('');
       setPerUnitWeight(0);
       setReorderLevel(10);
       setInitialStock(0);
     }
     setError(null);
-  }, [product, categories, isOpen]);
+  }, [product, isOpen]);
+
+  const effectiveUom = isCustomUom ? (customUom.trim() || 'Units') : uom;
 
   // Helper to suggest SKU from name if empty
   const handleNameBlur = () => {
@@ -84,6 +121,12 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       return;
     }
 
+    const finalUom = isCustomUom ? customUom.trim() : uom;
+    if (!finalUom) {
+      setError('Please specify a valid Unit of Measure (UoM).');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -92,7 +135,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           name: name.trim(),
           sku: sku.trim().toUpperCase(),
           category: finalCategory,
-          uom,
+          uom: finalUom,
           per_unit_weight: Number(perUnitWeight),
           reorder_level: Number(reorderLevel)
         });
@@ -102,7 +145,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           name: name.trim(),
           sku: sku.trim().toUpperCase(),
           category: finalCategory,
-          uom,
+          uom: finalUom,
           per_unit_weight: Number(perUnitWeight),
           reorder_level: Number(reorderLevel),
           initial_stock: Number(initialStock)
@@ -228,21 +271,57 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             )}
 
             {/* Unit of Measure */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                Unit of Measure (UoM) *
-              </label>
-              <select
-                value={uom}
-                onChange={(e) => setUom(e.target.value)}
-                className="w-full h-10 px-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                {COMMON_UOMS.map((u) => (
-                  <option key={u} value={u}>
-                    {u}
-                  </option>
-                ))}
-              </select>
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  Unit of Measure (UoM) *
+                </label>
+                <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">
+                  Active Unit: <strong className="font-semibold underline decoration-indigo-300 dark:decoration-indigo-700 underline-offset-2">{effectiveUom}</strong>
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <select
+                  value={isCustomUom ? '__CUSTOM__' : uom}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '__CUSTOM__') {
+                      setIsCustomUom(true);
+                    } else {
+                      setIsCustomUom(false);
+                      setUom(val);
+                    }
+                  }}
+                  className="w-full h-10 px-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                >
+                  {UOM_GROUPS.map((grp) => (
+                    <optgroup key={grp.group} label={grp.group}>
+                      {grp.units.map((u) => (
+                        <option key={u} value={u}>
+                          {u}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                  <option value="__CUSTOM__">+ Custom Unit of Measure...</option>
+                </select>
+
+                {isCustomUom ? (
+                  <input
+                    type="text"
+                    required
+                    placeholder="Type custom unit (e.g. Bunches, Drums, Vials)..."
+                    value={customUom}
+                    onChange={(e) => setCustomUom(e.target.value)}
+                    autoFocus
+                    className="w-full h-10 px-3 border border-indigo-400 dark:border-indigo-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  />
+                ) : (
+                  <div className="h-10 px-3 border border-dashed border-slate-200 dark:border-slate-700 rounded-lg flex items-center text-xs text-slate-500 dark:text-slate-400">
+                    <span>Stock tracking will measure in <strong className="text-slate-800 dark:text-slate-200 font-semibold">{effectiveUom}</strong></span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Unit Weight */}
@@ -263,7 +342,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             {/* Reorder Level Threshold */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                Reorder Threshold ({uom})
+                Reorder Threshold ({effectiveUom})
               </label>
               <input
                 type="number"
@@ -280,9 +359,9 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             {/* Initial Stock (Only for new products) */}
             {!isEdit && (
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                  Initial Stock on Hand ({uom})
+                  Initial Stock on Hand ({effectiveUom})
                 </label>
                 <input
                   type="number"

@@ -12,6 +12,8 @@ import {
   History,
   Warehouse,
   MapPin,
+  Building2,
+  User,
   X,
   Sun,
   Moon,
@@ -28,11 +30,27 @@ interface PaletteItem {
 }
 
 export const CommandPalette: React.FC = () => {
-  const { isCommandPaletteOpen, setIsCommandPaletteOpen, setCurrentView } = useNavigation();
+  const {
+    isCommandPaletteOpen,
+    setIsCommandPaletteOpen,
+    setCurrentView,
+    availableWarehouses,
+    setActiveWarehouse,
+    setIsProfileModalOpen,
+  } = useNavigation();
   const { isDark, toggleTheme } = useTheme();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const warehouseItems: PaletteItem[] = availableWarehouses.map((wh) => ({
+    id: `switch-wh-${wh.id}`,
+    title: `Switch Facility: ${wh.name}`,
+    subtitle: `Set active warehouse scope to [${wh.shortCode}]`,
+    category: 'Warehouses',
+    action: () => setActiveWarehouse(wh),
+    icon: <Warehouse className="w-4 h-4 text-brand-600" />,
+  }));
 
   const items: PaletteItem[] = [
     {
@@ -50,6 +68,14 @@ export const CommandPalette: React.FC = () => {
       category: 'Operations',
       view: 'receipts',
       icon: <PackagePlus className="w-4 h-4 text-emerald-600" />,
+    },
+    {
+      id: 'suppliers',
+      title: 'Suppliers & Vendors',
+      subtitle: 'Supplier directory, vendor contacts, and procurement partners',
+      category: 'Operations',
+      view: 'suppliers',
+      icon: <Building2 className="w-4 h-4 text-teal-600" />,
     },
     {
       id: 'deliveries',
@@ -93,7 +119,7 @@ export const CommandPalette: React.FC = () => {
     },
     {
       id: 'warehouses',
-      title: 'Warehouses',
+      title: 'Warehouses Configuration',
       subtitle: 'Facility buildings and company configurations',
       category: 'Settings',
       view: 'warehouses',
@@ -101,11 +127,20 @@ export const CommandPalette: React.FC = () => {
     },
     {
       id: 'locations',
-      title: 'Locations',
+      title: 'Locations Configuration',
       subtitle: 'Hierarchical paths (WH/Stock, WH/Output)',
       category: 'Settings',
       view: 'locations',
       icon: <MapPin className="w-4 h-4 text-teal-600" />,
+    },
+    ...warehouseItems,
+    {
+      id: 'profile',
+      title: 'My Profile & Account Settings',
+      subtitle: 'Update account details, security credentials, and view role permissions',
+      category: 'Preferences',
+      action: () => setIsProfileModalOpen(true),
+      icon: <User className="w-4 h-4 text-brand-600" />,
     },
     {
       id: 'theme-toggle',

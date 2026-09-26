@@ -341,4 +341,94 @@ router.get(
   })
 );
 
+/**
+ * PUT /api/v1/auth/profile
+ * Update user profile details (name, email)
+ */
+router.put(
+  '/profile',
+  authMiddleware,
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const UpdateProfileSchema = z.object({
+      name: z.string().min(2, 'Name must be at least 2 characters').max(255).optional(),
+      email: z.string().email('Invalid email address format').optional(),
+    });
+
+    const parsed = UpdateProfileSchema.parse(req.body);
+    const userId = req.user!.id;
+
+    const currentUser = await db.queryOne<any>('SELECT * FROM users WHERE id = $1', [userId]);
+    if (!currentUser) throw new AppError('User not found', 404);
+
+    const newName = parsed.name !== undefined ? parsed.name.trim() : currentUser.name;
+    const newEmail = parsed.email !== undefined ? parsed.email.trim() : currentUser.email;
+
+    if (parsed.email && parsed.email.toLowerCase() !== currentUser.email.toLowerCase()) {
+      const duplicate = await db.queryOne('SELECT id FROM users WHERE email = $1 AND id != $2', [newEmail, userId]);
+      if (duplicate) {
+        throw new AppError('This email is already in use by another account.', 409);
+      }
+    }
+
+    await db.execute(
+      'UPDATE users SET name = $1, email = $2 WHERE id = $3',
+      [newName, newEmail, userId]
+    );
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully.',
+      user: {
+        id: currentUser.id,
+        loginId: currentUser.login_id,
+        email: newEmail,
+        name: newName,
+        role: currentUser.role,
+        isActive: Boolean(currentUser.is_active),
+        createdAt: currentUser.created_at,
+      }
+    });
+  })
+);
+
+/**
+ * PUT /api/v1/auth/change-password
+ * Change current user password with old password verification
+ */
+router.put(
+  '/change-password',
+  authMiddleware,
+  asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const ChangePasswordSchema = z
+      .object({
+        currentPassword: z.string().min(1, 'Current password is required'),
+        newPassword: z.string().min(6, 'New password must be at least 6 characters'),
+        confirmPassword: z.string(),
+      })
+      .refine((data) => data.newPassword === data.confirmPassword, {
+        message: 'New passwords do not match',
+        path: ['confirmPassword'],
+      });
+
+    const parsed = ChangePasswordSchema.parse(req.body);
+    const userId = req.user!.id;
+
+    const user = await db.queryOne<any>('SELECT password_hash FROM users WHERE id = $1', [userId]);
+    if (!user) throw new AppError('User not found', 404);
+
+    const isMatch = await verifyPassword(parsed.currentPassword, user.password_hash);
+    if (!isMatch) {
+      throw new AppError('Current password is incorrect.', 400);
+    }
+
+    const newHash = await hashPassword(parsed.newPassword);
+    await db.execute('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, userId]);
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully.',
+    });
+  })
+);
+
 export const authRouter = router;

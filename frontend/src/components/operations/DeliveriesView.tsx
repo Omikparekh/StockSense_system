@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Delivery, DeliveriesApiResponse, Warehouse, WarehousesApiResponse } from '../../types';
 import { api } from '../../services/api';
+import { useNavigation } from '../../context/NavigationContext';
 import { DeliveryFormModal } from './DeliveryFormModal';
 import { DeliveryDetailModal } from './DeliveryDetailModal';
 import {
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export const DeliveriesView: React.FC = () => {
+  const { activeWarehouse } = useNavigation();
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,6 +88,9 @@ export const DeliveriesView: React.FC = () => {
 
   const filteredDeliveries = useMemo(() => {
     return deliveries.filter((d) => {
+      const matchesWarehouse =
+        activeWarehouse.id === 0 || d.warehouse_id === activeWarehouse.id;
+
       const matchesSearch =
         d.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
         d.partner_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -94,18 +99,19 @@ export const DeliveriesView: React.FC = () => {
       const matchesStatus =
         selectedStatus === 'all' || d.status.toLowerCase() === selectedStatus.toLowerCase();
 
-      return matchesSearch && matchesStatus;
+      return matchesWarehouse && matchesSearch && matchesStatus;
     });
-  }, [deliveries, searchTerm, selectedStatus]);
+  }, [deliveries, activeWarehouse, searchTerm, selectedStatus]);
 
   const counts = useMemo(() => {
+    const list = deliveries.filter((d) => activeWarehouse.id === 0 || d.warehouse_id === activeWarehouse.id);
     return {
-      all: deliveries.length,
-      waiting: deliveries.filter(d => d.status === 'Waiting').length,
-      ready: deliveries.filter(d => d.status === 'Ready').length,
-      done: deliveries.filter(d => d.status === 'Done').length,
+      all: list.length,
+      waiting: list.filter(d => d.status === 'Waiting').length,
+      ready: list.filter(d => d.status === 'Ready').length,
+      done: list.filter(d => d.status === 'Done').length,
     };
-  }, [deliveries]);
+  }, [deliveries, activeWarehouse]);
 
   return (
     <div className="space-y-6">

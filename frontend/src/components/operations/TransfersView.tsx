@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Transfer, TransfersApiResponse, Warehouse, WarehousesApiResponse } from '../../types';
 import { api } from '../../services/api';
+import { useNavigation } from '../../context/NavigationContext';
 import { TransferFormModal } from './TransferFormModal';
 import { TransferDetailModal } from './TransferDetailModal';
 import {
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export const TransfersView: React.FC = () => {
+  const { activeWarehouse } = useNavigation();
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,6 +88,9 @@ export const TransfersView: React.FC = () => {
 
   const filteredTransfers = useMemo(() => {
     return transfers.filter((t) => {
+      const matchesWarehouse =
+        activeWarehouse.id === 0 || t.warehouse_id === activeWarehouse.id;
+
       const matchesSearch =
         t.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
         t.source_path.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -94,18 +99,19 @@ export const TransfersView: React.FC = () => {
       const matchesStatus =
         selectedStatus === 'all' || t.status.toLowerCase() === selectedStatus.toLowerCase();
 
-      return matchesSearch && matchesStatus;
+      return matchesWarehouse && matchesSearch && matchesStatus;
     });
-  }, [transfers, searchTerm, selectedStatus]);
+  }, [transfers, activeWarehouse, searchTerm, selectedStatus]);
 
   const counts = useMemo(() => {
+    const list = transfers.filter((t) => activeWarehouse.id === 0 || t.warehouse_id === activeWarehouse.id);
     return {
-      all: transfers.length,
-      draft: transfers.filter(t => t.status === 'Draft').length,
-      ready: transfers.filter(t => t.status === 'Ready').length,
-      done: transfers.filter(t => t.status === 'Done').length,
+      all: list.length,
+      draft: list.filter(t => t.status === 'Draft').length,
+      ready: list.filter(t => t.status === 'Ready').length,
+      done: list.filter(t => t.status === 'Done').length,
     };
-  }, [transfers]);
+  }, [transfers, activeWarehouse]);
 
   return (
     <div className="space-y-6">

@@ -270,3 +270,24 @@ export interface TransferDetailApiResponse {
     items: TransferItem[];
   };
 }
+
+export interface Partner {
+  id: number;
+  name: string;
+  type: 'supplier' | 'customer';
+  contact_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  tax_id: string;
+  payment_terms: string;
+  notes: string;
+  operations_count: number;
+  created_at: string;
+}
+
+export interface PartnersApiResponse {
+  success: boolean;
+  data: Partner[];
+}
+

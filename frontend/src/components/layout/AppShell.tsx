@@ -4,6 +4,7 @@ import { TopNav } from './TopNav';
 import { MobileNav } from './MobileNav';
 import { CommandPalette } from './CommandPalette';
 import { NotificationDrawer } from './NotificationDrawer';
+import { ProfileModal } from './ProfileModal';
 import { ChevronRight } from 'lucide-react';
 
 interface AppShellProps {
@@ -11,7 +12,7 @@ interface AppShellProps {
 }
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
-  const { currentView, setCurrentView } = useNavigation();
+  const { currentView, setCurrentView, isProfileModalOpen, setIsProfileModalOpen } = useNavigation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getBreadcrumbs = (): { label: string; view?: AppView }[] => {
@@ -20,6 +21,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         return [{ label: 'Dashboard' }];
       case 'receipts':
         return [{ label: 'Operations', view: 'dashboard' }, { label: 'Receipts' }];
+      case 'suppliers':
+        return [{ label: 'Operations', view: 'dashboard' }, { label: 'Suppliers & Vendors' }];
       case 'deliveries':
         return [{ label: 'Operations', view: 'dashboard' }, { label: 'Deliveries' }];
       case 'transfers':
@@ -82,6 +85,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
       {/* Notifications Drawer */}
       <NotificationDrawer />
+
+      {/* User Profile Modal */}
+      <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />
     </div>
   );
 };

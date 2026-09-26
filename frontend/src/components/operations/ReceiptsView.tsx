@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Receipt, ReceiptsApiResponse, Warehouse, WarehousesApiResponse } from '../../types';
 import { api } from '../../services/api';
+import { useNavigation } from '../../context/NavigationContext';
 import { ReceiptFormModal } from './ReceiptFormModal';
 import { ReceiptDetailModal } from './ReceiptDetailModal';
 import {
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 
 export const ReceiptsView: React.FC = () => {
+  const { activeWarehouse } = useNavigation();
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,6 +87,9 @@ export const ReceiptsView: React.FC = () => {
 
   const filteredReceipts = useMemo(() => {
     return receipts.filter((r) => {
+      const matchesWarehouse =
+        activeWarehouse.id === 0 || r.warehouse_id === activeWarehouse.id;
+
       const matchesSearch =
         r.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
         r.partner_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,18 +98,19 @@ export const ReceiptsView: React.FC = () => {
       const matchesStatus =
         selectedStatus === 'all' || r.status.toLowerCase() === selectedStatus.toLowerCase();
 
-      return matchesSearch && matchesStatus;
+      return matchesWarehouse && matchesSearch && matchesStatus;
     });
-  }, [receipts, searchTerm, selectedStatus]);
+  }, [receipts, activeWarehouse, searchTerm, selectedStatus]);
 
   const counts = useMemo(() => {
+    const list = receipts.filter((r) => activeWarehouse.id === 0 || r.warehouse_id === activeWarehouse.id);
     return {
-      all: receipts.length,
-      draft: receipts.filter(r => r.status === 'Draft').length,
-      ready: receipts.filter(r => r.status === 'Ready').length,
-      done: receipts.filter(r => r.status === 'Done').length,
+      all: list.length,
+      draft: list.filter(r => r.status === 'Draft').length,
+      ready: list.filter(r => r.status === 'Ready').length,
+      done: list.filter(r => r.status === 'Done').length,
     };
-  }, [receipts]);
+  }, [receipts, activeWarehouse]);
 
   return (
     <div className="space-y-6">

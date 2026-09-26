@@ -8,6 +8,7 @@ import { deliveriesRouter } from './deliveries.router.js';
 import { transfersRouter } from './transfers.router.js';
 import { historyRouter } from './history.router.js';
 import { dashboardRouter } from './dashboard.router.js';
+import { partnersRouter } from './partners.router.js';
 
 const apiV1Router = Router();
 
@@ -20,6 +21,7 @@ apiV1Router.use('/deliveries', deliveriesRouter);
 apiV1Router.use('/transfers', transfersRouter);
 apiV1Router.use('/stock-history', historyRouter);
 apiV1Router.use('/dashboard', dashboardRouter);
+apiV1Router.use('/partners', partnersRouter);
 
 export { apiV1Router };
 

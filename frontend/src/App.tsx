@@ -13,6 +13,7 @@ import { WarehouseView } from './components/warehouses/WarehouseView';
 import { ReceiptsView } from './components/operations/ReceiptsView';
 import { DeliveriesView } from './components/operations/DeliveriesView';
 import { TransfersView } from './components/operations/TransfersView';
+import { SuppliersView } from './components/suppliers/SuppliersView';
 import { DashboardView } from './components/dashboard/DashboardView';
 import { StockHistoryView } from './components/history/StockHistoryView';
 import { AdjustmentsView } from './components/history/AdjustmentsView';
@@ -26,6 +27,8 @@ const ViewRouter: React.FC = () => {
       return <DashboardView />;
     case 'receipts':
       return <ReceiptsView />;
+    case 'suppliers':
+      return <SuppliersView />;
     case 'deliveries':
       return <DeliveriesView />;
     case 'transfers':

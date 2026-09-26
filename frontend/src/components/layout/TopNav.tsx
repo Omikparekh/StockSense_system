@@ -14,6 +14,9 @@ import {
   Truck,
   ArrowRightLeft,
   MapPin,
+  Building2,
+  User,
+  Check,
 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -28,18 +31,23 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleMobileMenu }) => {
     currentView,
     setCurrentView,
     activeWarehouse,
+    setActiveWarehouse,
+    availableWarehouses,
     setIsCommandPaletteOpen,
     setIsNotificationsOpen,
     unreadNotificationsCount,
+    setIsProfileModalOpen,
   } = useNavigation();
 
   const [isOperationsOpen, setIsOperationsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isWarehouseDropdownOpen, setIsWarehouseDropdownOpen] = useState(false);
 
   const operationsRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const warehouseDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -52,6 +60,9 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleMobileMenu }) => {
       }
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setIsProfileOpen(false);
+      }
+      if (warehouseDropdownRef.current && !warehouseDropdownRef.current.contains(event.target as Node)) {
+        setIsWarehouseDropdownOpen(false);
       }
     };
 
@@ -66,7 +77,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleMobileMenu }) => {
     setIsProfileOpen(false);
   };
 
-  const isOperationActive = ['receipts', 'deliveries', 'transfers', 'adjustments'].includes(currentView);
+  const isOperationActive = ['receipts', 'deliveries', 'transfers', 'adjustments', 'suppliers'].includes(currentView);
   const isSettingsActive = ['warehouses', 'locations'].includes(currentView);
 
   return (
@@ -119,7 +130,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleMobileMenu }) => {
               </button>
 
               {isOperationsOpen && (
-                <div className="absolute left-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-elevated py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="absolute left-0 mt-2 w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-elevated py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
                   <button
                     onClick={() => handleNavClick('receipts')}
                     className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
@@ -128,6 +139,17 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleMobileMenu }) => {
                     <div className="text-left">
                       <div className="font-semibold">Receipts</div>
                       <div className="text-[10px] text-slate-400 dark:text-slate-500">Inbound orders (WH/IN/...)</div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavClick('suppliers')}
+                    className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                  >
+                    <Building2 className="w-4 h-4 text-teal-600" />
+                    <div className="text-left">
+                      <div className="font-semibold">Suppliers & Vendors</div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500">Partner directory & procurement</div>
                     </div>
                   </button>
 
@@ -250,10 +272,77 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleMobileMenu }) => {
             </kbd>
           </button>
 
-          {/* Active Warehouse Tag */}
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300">
-            <Warehouse className="w-3.5 h-3.5 text-slate-400" />
-            <span>{activeWarehouse.name} ({activeWarehouse.shortCode})</span>
+          {/* Active Warehouse Dropdown Switcher */}
+          <div className="relative hidden lg:block" ref={warehouseDropdownRef}>
+            <button
+              onClick={() => setIsWarehouseDropdownOpen((prev) => !prev)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors shadow-2xs group"
+              title="Switch Active Facility / Warehouse"
+            >
+              <Warehouse className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 group-hover:scale-105 transition-transform" />
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
+                {activeWarehouse.name}
+              </span>
+              <span className="px-1.5 py-0.2 rounded bg-slate-200/70 dark:bg-slate-750 text-[10px] font-mono text-slate-600 dark:text-slate-300">
+                {activeWarehouse.shortCode}
+              </span>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
+            </button>
+
+            {isWarehouseDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-elevated py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
+                  <span>Switch Facility</span>
+                  <span className="font-mono text-[9px]">{availableWarehouses.length} options</span>
+                </div>
+                <div className="max-h-60 overflow-y-auto py-1">
+                  {availableWarehouses.map((wh) => {
+                    const isSelected = activeWarehouse.id === wh.id;
+                    return (
+                      <button
+                        key={wh.id}
+                        onClick={() => {
+                          setActiveWarehouse(wh);
+                          setIsWarehouseDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3.5 py-2 text-xs transition-colors ${
+                          isSelected
+                            ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 font-bold'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          {isSelected ? (
+                            <Check className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0" />
+                          ) : (
+                            <Warehouse className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          )}
+                          <span className="truncate">{wh.name}</span>
+                        </div>
+                        <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0 ${
+                          isSelected 
+                            ? 'bg-brand-200/60 dark:bg-brand-800 text-brand-800 dark:text-brand-200' 
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                        }`}>
+                          {wh.shortCode}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="border-t border-slate-100 dark:border-slate-800 mt-1 pt-1 px-1">
+                  <button
+                    onClick={() => {
+                      setIsWarehouseDropdownOpen(false);
+                      handleNavClick('warehouses');
+                    }}
+                    className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline"
+                  >
+                    <span>Manage all facilities &rarr;</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Light / Dark Mode Toggle */}
@@ -299,7 +388,18 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleMobileMenu }) => {
                   </div>
                 </div>
 
-                <div className="p-1">
+                <div className="p-1 space-y-0.5">
+                  <button
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      setIsProfileModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  >
+                    <User className="w-4 h-4 text-brand-600" />
+                    <span>My Profile & Account</span>
+                  </button>
+
                   <button
                     onClick={logout}
                     className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"

@@ -209,6 +209,21 @@ class DatabaseClient {
         demand_qty NUMERIC(12, 2) NOT NULL,
         done_qty NUMERIC(12, 2) NOT NULL DEFAULT 0,
         created_at ${timestampDefault}
+      );`,
+
+      // Partners / Suppliers / Vendors table
+      `CREATE TABLE IF NOT EXISTS partners (
+        id ${autoInc},
+        name VARCHAR(255) NOT NULL,
+        type VARCHAR(50) NOT NULL DEFAULT 'supplier',
+        contact_name VARCHAR(255),
+        email VARCHAR(255),
+        phone VARCHAR(100),
+        address TEXT,
+        tax_id VARCHAR(100),
+        payment_terms VARCHAR(100) DEFAULT 'Net 30',
+        notes TEXT,
+        created_at ${timestampDefault}
       );`
     ];
 
@@ -396,6 +411,37 @@ class DatabaseClient {
         );
 
         console.log('[Database] Seeded demo operations (WH/IN/00001-2, WH/OUT/00001-2, WH/INT/00001) and sequences.');
+      }
+
+      // Seed initial suppliers if none exist
+      try {
+        const existingPartners = await this.queryOne('SELECT COUNT(*) as count FROM partners');
+        const partnerCount = Number((existingPartners as any)?.count) || 0;
+        if (partnerCount === 0) {
+          await this.execute(
+            `INSERT INTO partners (name, type, contact_name, email, phone, address, tax_id, payment_terms, notes)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            ['Global Logistics Supplies', 'supplier', 'Marcus Vance', 'marcus@globallogistics.io', '+1 (555) 234-5678', '1200 Industrial Pkwy, Chicago, IL 60601', 'US-TAX-88902', 'Net 30', 'Primary vendor for raw steel and metallic raw materials']
+          );
+          await this.execute(
+            `INSERT INTO partners (name, type, contact_name, email, phone, address, tax_id, payment_terms, notes)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            ['Apex Hardware Corp', 'supplier', 'Sarah Chen', 'sarah@apexhardware.com', '+1 (555) 876-5432', '450 Metalworks Blvd, Cleveland, OH 44114', 'US-TAX-44109', 'Net 15', 'Precision fastener and bolt components distributor']
+          );
+          await this.execute(
+            `INSERT INTO partners (name, type, contact_name, email, phone, address, tax_id, payment_terms, notes)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            ['Starlight Packaging Ltd', 'supplier', 'David Miller', 'orders@starlightpackaging.com', '+1 (555) 345-6789', '88 Box Lane, Dallas, TX 75201', 'US-TAX-10293', 'Net 30', 'High durability cartons, packaging films and shipping boxes']
+          );
+          await this.execute(
+            `INSERT INTO partners (name, type, contact_name, email, phone, address, tax_id, payment_terms, notes)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            ['Acme Industrial Supplies', 'supplier', 'Robert King', 'robert@acmeindustrial.com', '+1 (555) 901-2345', '77 Chemistry Way, Houston, TX 77001', 'US-TAX-66512', 'Due on Receipt', 'Industrial lubricants, seals and chemicals']
+          );
+          console.log('[Database] Seeded default suppliers into partners table.');
+        }
+      } catch (pErr) {
+        console.warn('[Database] Partners table seed notice:', pErr);
       }
     } catch (err) {
       console.warn('[Database] Seeding notice:', err);

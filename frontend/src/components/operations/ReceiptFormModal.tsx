@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ProductWithStock, Warehouse, LocationItem } from '../../types';
+import { ProductWithStock, Warehouse, LocationItem, Partner } from '../../types';
 import { api, ApiError } from '../../services/api';
 import { X, PackagePlus, Plus, Trash2, AlertCircle, Calendar } from 'lucide-react';
+import { SupplierModal } from '../suppliers/SupplierModal';
 
 interface LineItemDraft {
   product_id: number;
@@ -24,6 +25,8 @@ export const ReceiptFormModal: React.FC<ReceiptFormModalProps> = ({
   if (!isOpen) return null;
 
   const [products, setProducts] = useState<ProductWithStock[]>([]);
+  const [suppliers, setSuppliers] = useState<Partner[]>([]);
+  const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
   const [warehouseId, setWarehouseId] = useState<number>(warehouses[0]?.id || 1);
   const [locations, setLocations] = useState<LocationItem[]>([]);
   const [destinationLocationId, setDestinationLocationId] = useState<number>(1);
@@ -36,10 +39,20 @@ export const ReceiptFormModal: React.FC<ReceiptFormModalProps> = ({
 
   useEffect(() => {
     fetchProducts();
+    fetchSuppliers();
     if (warehouses.length > 0) {
       setWarehouseId(warehouses[0].id);
     }
   }, [warehouses, isOpen]);
+
+  const fetchSuppliers = async () => {
+    try {
+      const res = await api.get<any>('/partners?type=supplier');
+      setSuppliers(res.data || []);
+    } catch (err) {
+      console.warn('Failed to load suppliers:', err);
+    }
+  };
 
   useEffect(() => {
     // Update destination locations when warehouse changes
@@ -176,17 +189,35 @@ export const ReceiptFormModal: React.FC<ReceiptFormModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Vendor Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                Vendor / Supplier *
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  Vendor / Supplier *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsSupplierModalOpen(true)}
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium flex items-center space-x-1"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>New Supplier</span>
+                </button>
+              </div>
               <input
                 type="text"
+                list="receipt-suppliers-list"
                 required
-                placeholder="e.g. Tata Steel Supplies Ltd."
+                placeholder="Select or enter supplier name..."
                 value={partnerName}
                 onChange={(e) => setPartnerName(e.target.value)}
                 className="w-full h-10 px-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
+              <datalist id="receipt-suppliers-list">
+                {suppliers.map((s) => (
+                  <option key={s.id} value={s.name}>
+                    {s.contact_name ? `${s.name} (${s.contact_name})` : s.name}
+                  </option>
+                ))}
+              </datalist>
             </div>
 
             {/* Scheduled Date */}
@@ -362,6 +393,18 @@ export const ReceiptFormModal: React.FC<ReceiptFormModalProps> = ({
           </div>
         </form>
       </div>
+
+      {isSupplierModalOpen && (
+        <SupplierModal
+          isOpen={isSupplierModalOpen}
+          onClose={() => setIsSupplierModalOpen(false)}
+          onSuccess={(newSupplier: Partner) => {
+            setPartnerName(newSupplier.name);
+            fetchSuppliers();
+            setIsSupplierModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ProductWithStock, ProductsApiResponse } from '../../types';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigation } from '../../context/NavigationContext';
 import { QuickAdjustModal } from './QuickAdjustModal';
 import { ProductFormModal } from './ProductFormModal';
 import { ProductDetailDrawer } from './ProductDetailDrawer';
@@ -27,6 +28,7 @@ import {
 
 export const StockView: React.FC = () => {
   const { user } = useAuth();
+  const { activeWarehouse } = useNavigation();
   const canManageCatalog = user?.role === 'admin' || user?.role === 'inventory_manager';
   const canDeleteProduct = user?.role === 'admin';
 
@@ -57,7 +59,7 @@ export const StockView: React.FC = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [activeWarehouse]);
 
   const fetchProducts = async (isSilent = false) => {
     if (!isSilent) setLoading(true);
@@ -65,7 +67,8 @@ export const StockView: React.FC = () => {
     setError(null);
 
     try {
-      const res = await api.get<ProductsApiResponse>('/products');
+      const endpoint = activeWarehouse.id !== 0 ? `/products?warehouse_id=${activeWarehouse.id}` : '/products';
+      const res = await api.get<ProductsApiResponse>(endpoint);
       setProducts(res.data.products);
       setCategories(res.data.categories || []);
     } catch (err: any) {
