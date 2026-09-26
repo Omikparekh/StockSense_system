@@ -7,6 +7,7 @@ import { OtpVerificationModal } from './components/auth/OtpVerificationModal';
 import { ForgotPasswordModal } from './components/auth/ForgotPasswordModal';
 import { AppShell } from './components/layout/AppShell';
 import { StockView } from './components/products/StockView';
+import { WarehouseView } from './components/warehouses/WarehouseView';
 import { Card } from './components/ui/Card';
 import { Badge } from './components/ui/Badge';
 import { Button } from './components/ui/Button';
@@ -18,8 +19,6 @@ import {
   ArrowRightLeft,
   SlidersHorizontal,
   History,
-  Warehouse,
-  MapPin,
   Clock,
   AlertCircle,
   Plus,
@@ -266,23 +265,8 @@ const ViewRouter: React.FC = () => {
         />
       );
     case 'warehouses':
-      return (
-        <PlaceholderOperationalView
-          title="Warehouses Management"
-          subtitle="Multi-warehouse facilities and address configurations (Admin only)"
-          codePrefix="Warehouses"
-          icon={<Warehouse className="w-6 h-6" />}
-        />
-      );
     case 'locations':
-      return (
-        <PlaceholderOperationalView
-          title="Locations Management"
-          subtitle="Hierarchical sub-locations (WH/Stock, WH/Output, Racks)"
-          codePrefix="Locations"
-          icon={<MapPin className="w-6 h-6" />}
-        />
-      );
+      return <WarehouseView />;
     default:
       return <DashboardView />;
   }

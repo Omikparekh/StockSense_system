@@ -1,0 +1,207 @@
+import React, { useState, useEffect } from 'react';
+import { Warehouse } from '../../types';
+import { api, ApiError } from '../../services/api';
+import { X, Warehouse as WarehouseIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
+
+interface WarehouseModalProps {
+  warehouse: Warehouse | null; // null for create mode
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: (saved: any, isEdit: boolean) => void;
+}
+
+export const WarehouseModal: React.FC<WarehouseModalProps> = ({
+  warehouse,
+  isOpen,
+  onClose,
+  onSuccess
+}) => {
+  if (!isOpen) return null;
+
+  const isEdit = !!warehouse;
+  const [name, setName] = useState('');
+  const [shortCode, setShortCode] = useState('');
+  const [address, setAddress] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (warehouse) {
+      setName(warehouse.name);
+      setShortCode(warehouse.short_code);
+      setAddress(warehouse.address || '');
+    } else {
+      setName('');
+      setShortCode('');
+      setAddress('');
+    }
+    setError(null);
+  }, [warehouse, isOpen]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!name.trim()) {
+      setError('Warehouse name is required.');
+      return;
+    }
+
+    if (!isEdit && !shortCode.trim()) {
+      setError('Short code is required (e.g. WH, EAST, ORD).');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (isEdit && warehouse) {
+        const res = await api.put<any>(`/warehouses/${warehouse.id}`, {
+          name: name.trim(),
+          address: address.trim()
+        });
+        onSuccess(res.data, true);
+      } else {
+        const res = await api.post<any>('/warehouses', {
+          name: name.trim(),
+          short_code: shortCode.trim().toUpperCase(),
+          address: address.trim()
+        });
+        onSuccess(res.data, false);
+      }
+      onClose();
+    } catch (err: any) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError('Failed to save warehouse facility.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div 
+        className="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        role="dialog"
+      >
+        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+              <WarehouseIcon className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-slate-900">
+                {isEdit ? 'Edit Warehouse' : 'New Warehouse Facility'}
+              </h3>
+              <p className="text-xs text-slate-500">
+                {isEdit ? `Updating ${warehouse?.short_code}` : 'Register a new storage and logistics center'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/60 transition"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-2 text-red-700 text-sm">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              Facility Name *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Central Distribution Hub"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full h-10 px-3 border border-slate-300 rounded-lg text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              Short Code * {isEdit && <span className="text-slate-400 font-normal">(Immutable)</span>}
+            </label>
+            <input
+              type="text"
+              required
+              disabled={isEdit}
+              placeholder="e.g. WH, CDH, NORTH"
+              maxLength={10}
+              value={shortCode}
+              onChange={(e) => setShortCode(e.target.value.toUpperCase())}
+              className={`w-full h-10 px-3 font-mono font-semibold border rounded-lg text-sm focus:outline-none ${
+                isEdit 
+                  ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed' 
+                  : 'border-slate-300 text-slate-900 focus:ring-2 focus:ring-indigo-500'
+              }`}
+            />
+            <span className="text-[11px] text-slate-500 mt-1 block">
+              Used in sequence codes (e.g. <code className="font-mono bg-slate-100 px-1 rounded">{shortCode || 'WH'}/IN/00001</code>) and compound location paths.
+            </span>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              Physical Street Address
+            </label>
+            <textarea
+              rows={2}
+              placeholder="e.g. Building 4, Logistics Park Sector 7..."
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full p-3 border border-slate-300 rounded-lg text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+            />
+          </div>
+
+          {!isEdit && (
+            <div className="p-3 bg-indigo-50/70 border border-indigo-100 rounded-lg text-xs text-indigo-900 flex items-start space-x-2">
+              <CheckCircle2 className="w-4 h-4 text-indigo-600 mt-0.5 shrink-0" />
+              <div>
+                <span className="font-semibold">Automatic Provisioning:</span> Creating this warehouse will automatically initialize default storage locations: <code className="font-mono bg-indigo-100 px-1 py-0.5 rounded text-indigo-800 font-semibold">{shortCode || 'CODE'}/Stock</code> and <code className="font-mono bg-indigo-100 px-1 py-0.5 rounded text-indigo-800 font-semibold">{shortCode || 'CODE'}/Output</code>.
+              </div>
+            </div>
+          )}
+
+          <div className="pt-3 border-t border-slate-200 flex items-center justify-end space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition disabled:opacity-50 flex items-center space-x-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <span>{isEdit ? 'Save Changes' : 'Create Warehouse'}</span>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};

@@ -82,3 +82,36 @@ export interface ProductDetailApiResponse {
     recentMovements: StockMovement[];
   };
 }
+
+export interface LocationItem {
+  id: number;
+  warehouse_id: number;
+  warehouse_name?: string;
+  warehouse_code?: string;
+  name: string;
+  short_code: string;
+  path: string;
+  total_on_hand: number;
+  distinct_products: number;
+  created_at?: string;
+}
+
+export interface Warehouse {
+  id: number;
+  name: string;
+  short_code: string;
+  address: string;
+  total_on_hand: number;
+  locations: LocationItem[];
+  created_at?: string;
+}
+
+export interface WarehousesApiResponse {
+  success: boolean;
+  data: Warehouse[];
+}
+
+export interface LocationsApiResponse {
+  success: boolean;
+  data: LocationItem[];
+}
